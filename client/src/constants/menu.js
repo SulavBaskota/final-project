@@ -1,10 +1,10 @@
 import {
   IconPencilPlus,
   IconHome,
-  IconJewishStar,
   IconCheckupList,
   IconTruckDelivery,
   IconUsers,
+  IconBookmarks
 } from "@tabler/icons";
 
 const iconSize = 16;
@@ -24,8 +24,8 @@ export const USER_MENU = [
   },
   {
     label: "My Wishlist",
-    icon: <IconJewishStar size={iconSize} />,
-    href: "/my-wishlist",
+    icon: <IconBookmarks size={iconSize} />,
+    href: "/bookmarks",
     color: "grape",
   },
 ];

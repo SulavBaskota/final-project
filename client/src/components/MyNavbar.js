@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Navbar,
   Text,
@@ -30,7 +31,12 @@ const CreateMenu = ({ item }) => (
 );
 
 export default function MyNavbar({ opened }) {
-  const { isMismatched } = useStateContext();
+  const { address, role, updateRole, isMismatched } = useStateContext();
+
+  useEffect(() => {
+    updateRole();
+  }, [address]);
+
   return (
     <Navbar
       p="md"
@@ -43,12 +49,16 @@ export default function MyNavbar({ opened }) {
           <CreateMenu item={item} key={index} />
         ))}
       </Navbar.Section>
-      <Divider my="sm" />
-      <Navbar.Section>
-        {ADMIN_MENU.map((item, index) => (
-          <CreateMenu item={item} key={index} />
-        ))}
-      </Navbar.Section>
+      {role && (role === "admin" || role === "super") && (
+        <>
+          <Divider my="sm" />
+          <Navbar.Section grow={role === "admin" ? true : false}>
+            {ADMIN_MENU.map((item, index) => (
+              <CreateMenu item={item} key={index} />
+            ))}
+          </Navbar.Section>
+        </>
+      )}
       <Divider my="sm" />
       <Navbar.Section grow>
         {SUPER_ADMIN_MENU.map((item, index) => (
