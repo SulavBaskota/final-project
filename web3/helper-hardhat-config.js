@@ -1,11 +1,11 @@
-const frontEndAdminAbiFile = "../frontend/constants/Admin/abi.json";
-const frontEndAdminAddressFile = "../frontend/constants/Admin/address.json";
+const frontEndAdminAbiFile = "../client/src/constants/Admin/abi.json";
+const frontEndAdminAddressFile = "../client/src/constants/Admin/address.json";
 const frontEndBlindAuctionAbiFile =
-  "../frontend/constants/BlindAuction/abi.json";
+  "../client/src/constants/BlindAuction/abi.json";
 const frontEndBlindAuctionFactoryAbiFile =
-  "../frontend/constants/BlindAuctionFactory/abi.json";
+  "../client/src/constants/BlindAuctionFactory/abi.json";
 const frontEndBlindAuctionFactoryAddressFile =
-  "../frontend/constants/BlindAuctionFactory/address.json";
+  "../client/src/constants/BlindAuctionFactory/address.json";
 
 const BackEndBlindAuctionAbiFile =
   "./artifacts/contracts/BlindAuction.sol/BlindAuction.json";

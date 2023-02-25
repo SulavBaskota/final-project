@@ -2,8 +2,6 @@ import React, { useContext, createContext } from "react";
 import { useToggle } from "@mantine/hooks";
 import {
   useAddress,
-  useContract,
-  useContractRead,
   useDisconnect,
   useMetamask,
   useNetworkMismatch,
@@ -35,15 +33,15 @@ export const StateContextProvider = ({ children }) => {
   const isSuperAdmin = async () => await adminContract.isSuperAdmin();
 
   const connectWallet = async () => {
-    toggleIsLoading();
+    toggleIsLoading(true);
     await connect();
-    toggleIsLoading();
+    toggleIsLoading(false);
   };
 
   const disconnectWallet = async () => {
-    toggleIsLoading();
+    toggleIsLoading(true);
     await disconnect();
-    toggleIsLoading();
+    toggleIsLoading(false);
   };
 
   const updateRole = async () => {
@@ -59,12 +57,10 @@ export const StateContextProvider = ({ children }) => {
   };
 
   const getAdmins = async () => {
-    try {
-      const admins = await adminContract.call("getAdmins");
-      console.log(admins);
-    } catch (e) {
-      console.log(e);
-    }
+    toggleIsLoading(true);
+    const admins = await adminContract.getAdmins();
+    toggleIsLoading(false);
+    return admins.slice(1);
   };
 
   return (

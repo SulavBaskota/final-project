@@ -44,7 +44,7 @@ export default function MyNavbar({ opened }) {
       hidden={!opened}
       width={{ sm: 250, lg: 300 }}
     >
-      <Navbar.Section>
+      <Navbar.Section grow={role ? false : true}>
         {USER_MENU.map((item, index) => (
           <CreateMenu item={item} key={index} />
         ))}
@@ -59,12 +59,16 @@ export default function MyNavbar({ opened }) {
           </Navbar.Section>
         </>
       )}
-      <Divider my="sm" />
-      <Navbar.Section grow>
-        {SUPER_ADMIN_MENU.map((item, index) => (
-          <CreateMenu item={item} key={index} />
-        ))}
-      </Navbar.Section>
+      {role && role === "super" && (
+        <>
+          <Divider my="sm" />
+          <Navbar.Section grow>
+            {SUPER_ADMIN_MENU.map((item, index) => (
+              <CreateMenu item={item} key={index} />
+            ))}
+          </Navbar.Section>
+        </>
+      )}
       {isMismatched && (
         <>
           <Divider my="sm" />

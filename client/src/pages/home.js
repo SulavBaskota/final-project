@@ -13,6 +13,7 @@ import { useStateContext } from "@component/context";
 
 export default function Home() {
   const { connectWallet, isLoading } = useStateContext();
+  
   return (
     <Paper shadow="xs" p="md">
       <Grid justify="center" align="center">
