@@ -1,5 +1,6 @@
-import React, { useContext, createContext, useState } from "react";
-import { useToggle } from "@mantine/hooks";
+import { createContext, useContext, useState } from "react";
+import { ethers } from "ethers";
+import { adminAbi, adminContractAddress } from "@component/constants";
 import {
   useAddress,
   useDisconnect,
@@ -7,14 +8,14 @@ import {
   useNetworkMismatch,
   useSigner,
 } from "@thirdweb-dev/react";
-import { adminAbi, adminContractAddress } from "@component/constants";
-import { ethers } from "ethers";
+import { useToggle } from "@mantine/hooks";
 
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
   const [isLoading, toggleIsLoading] = useToggle([false, true]);
   const [role, toggleRole] = useToggle([null, "admin", "super"]);
+  const [admins, setAdmins] = useState([]);
 
   const address = useAddress();
   const connect = useMetamask();
@@ -54,9 +55,11 @@ export const StateContextProvider = ({ children }) => {
 
   const isSuperAdmin = async () => await adminContract.isSuperAdmin();
 
-  const getAdmins = async () => {
-    const admins = await adminContract.getAdmins();
-    return admins.slice(1);
+  const updateAdmins = async () => {
+    if (adminContract) {
+      const adminList = await adminContract.getAdmins();
+      setAdmins(adminList.slice(1));
+    }
   };
 
   const updateRole = async () => {
@@ -77,16 +80,17 @@ export const StateContextProvider = ({ children }) => {
     <StateContext.Provider
       value={{
         address,
+        admins,
         connectWallet,
-        disconnectWallet,
-        role,
-        updateRole,
-        getAdmins,
-        registerAdmin,
         deleteAdmin,
+        disconnectWallet,
         isMismatched,
         isLoading,
+        registerAdmin,
+        role,
         toggleIsLoading,
+        updateAdmins,
+        updateRole,
       }}
     >
       {children}

@@ -3,7 +3,7 @@ pragma solidity 0.8.17;
 
 error NotSuperAdmin();
 error CannotDeleteSuperAdmin();
-error AdminAlreadyRegisterd();
+error AdminAlreadyRegistered();
 error AddressNotAdmin();
 error InvalidAddress();
 
@@ -26,7 +26,7 @@ contract Admin {
     function registerAdmin(address adminAddress) external onlySuperAdmin {
         if (adminAddress == address(0)) revert InvalidAddress();
         if (adminAddressMap[adminAddress] == true)
-            revert AdminAlreadyRegisterd();
+            revert AdminAlreadyRegistered();
         adminAddressMap[adminAddress] = true;
         adminAddressArray.push(adminAddress);
     }

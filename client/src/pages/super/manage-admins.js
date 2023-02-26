@@ -1,35 +1,29 @@
 import {
-  Table,
   Pagination,
   Stack,
   Container,
   Button,
   Box,
   MediaQuery,
-  ActionIcon,
-  Center,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { ethers } from "ethers";
 import { useStateContext } from "@component/context";
-import { IconUserPlus, IconUserX } from "@tabler/icons";
+import { IconUserPlus } from "@tabler/icons";
 import Custom401 from "../401";
 import RegisterAdmin from "@component/components/RegisterAdmin";
+import AdminList from "@component/components/AdminList";
 
 export default function ManageAdmins() {
-  const { role, getAdmins, registerAdmin, deleteAdmin, toggleIsLoading } =
-    useStateContext();
-  const [admins, setAdmins] = useState([]);
+  const { role, admins, updateAdmins } = useStateContext();
   const [activePage, setPage] = useState(1);
+  const [opened, setOpened] = useState(false);
   const [total, setTotal] = useState(1);
   const [rows, setRows] = useState([]);
-  const [newAddress, setNewAddress] = useState("");
-  const [opened, setOpened] = useState(false);
+
   const itemPerPage = 5;
 
   const fetchAdmins = async () => {
-    const data = await getAdmins();
-    setAdmins(data);
+    await updateAdmins();
   };
 
   useEffect(() => {
@@ -45,39 +39,6 @@ export default function ManageAdmins() {
       setRows(admins.slice(from, to));
     }
   }, [admins, activePage]);
-
-  const handleRegister = async () => {
-    if (ethers.utils.isAddress(newAddress)) {
-      try {
-        toggleIsLoading(true);
-        const res = await registerAdmin(newAddress);
-        console.log(res);
-        await res.wait();
-        fetchAdmins();
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setNewAddress("");
-        setOpened(false);
-        toggleIsLoading(false);
-      }
-    }
-  };
-
-  const handleDelete = async (adminAddress) => {
-    try {
-      toggleIsLoading(true);
-      const res = await deleteAdmin(adminAddress);
-      console.log(res);
-      await res.wait();
-      fetchAdmins();
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setPage(1);
-      toggleIsLoading(false);
-    }
-  };
 
   const AddAdminButton = () => (
     <Button
@@ -98,42 +59,13 @@ export default function ManageAdmins() {
                 <AddAdminButton />
               </Box>
             </MediaQuery>
-            <RegisterAdmin
-              opened={opened}
-              setOpened={setOpened}
-              newAddress={newAddress}
-              setNewAddress={setNewAddress}
-              handleRegister={handleRegister}
+            <RegisterAdmin opened={opened} setOpened={setOpened} />
+            <AdminList
+              rows={rows}
+              activePage={activePage}
+              itemPerPage={itemPerPage}
+              setPage={setPage}
             />
-            <Table>
-              <thead>
-                <tr>
-                  <th>Id</th>
-                  <th>Admin Address</th>
-                  <th>
-                    <Center>Action</Center>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((item, index) => (
-                  <tr key={index}>
-                    <td>{(activePage - 1) * itemPerPage + (index + 1)}</td>
-                    <td>{item}</td>
-                    <td>
-                      <Center>
-                        <ActionIcon
-                          color="red"
-                          onClick={() => handleDelete(item)}
-                        >
-                          <IconUserX size={16} />
-                        </ActionIcon>
-                      </Center>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
             <Pagination page={activePage} onChange={setPage} total={total} />
             <MediaQuery largerThan="md" styles={{ display: "none" }}>
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
