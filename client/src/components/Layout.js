@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { AppShell, useMantineTheme } from "@mantine/core";
+import { AppShell, useMantineTheme, LoadingOverlay } from "@mantine/core";
 import MyNavbar from "./MyNavbar";
 import MyHeader from "./MyHeader";
+import { useStateContext } from "@component/context";
 
 export default function Layout({ children }) {
   const theme = useMantineTheme();
+  const { isLoading } = useStateContext();
   const [opened, setOpened] = useState(false);
+
   return (
     <AppShell
       styles={{
@@ -21,6 +24,7 @@ export default function Layout({ children }) {
       navbar={<MyNavbar opened={opened} />}
       header={<MyHeader opened={opened} setOpened={setOpened} />}
     >
+      <LoadingOverlay visible={isLoading} overlayBlur={2} />
       {children}
     </AppShell>
   );

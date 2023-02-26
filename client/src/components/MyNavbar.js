@@ -49,7 +49,7 @@ export default function MyNavbar({ opened }) {
           <CreateMenu item={item} key={index} />
         ))}
       </Navbar.Section>
-      {role && (role === "admin" || role === "super") && (
+      {role !== null && (role === "admin" || role === "super") && (
         <>
           <Divider my="sm" />
           <Navbar.Section grow={role === "admin" ? true : false}>

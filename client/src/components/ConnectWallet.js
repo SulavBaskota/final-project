@@ -5,8 +5,7 @@ import { buttonStyles } from "@component/styles/customStyles";
 import { useStateContext } from "@component/context";
 
 export default function ConnectWallet() {
-  const { address, isLoading, connectWallet, disconnectWallet } =
-    useStateContext();
+  const { address, connectWallet, disconnectWallet } = useStateContext();
 
   return (
     <>
@@ -16,7 +15,6 @@ export default function ConnectWallet() {
           fullWidth
           size="lg"
           onClick={connectWallet}
-          loading={isLoading}
         >
           Connect Wallet
         </Button>

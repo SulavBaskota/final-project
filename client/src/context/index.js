@@ -1,4 +1,4 @@
-import React, { useContext, createContext } from "react";
+import React, { useContext, createContext, useState } from "react";
 import { useToggle } from "@mantine/hooks";
 import {
   useAddress,
@@ -14,7 +14,7 @@ const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
   const [isLoading, toggleIsLoading] = useToggle([false, true]);
-  const [role, toogleRole] = useToggle([null, "admin", "super"]);
+  const [role, toggleRole] = useToggle([null, "admin", "super"]);
 
   const address = useAddress();
   const connect = useMetamask();
@@ -28,10 +28,6 @@ export const StateContextProvider = ({ children }) => {
     signer
   );
 
-  const isAdmin = async () => await adminContract.isAdmin(address);
-
-  const isSuperAdmin = async () => await adminContract.isSuperAdmin();
-
   const connectWallet = async () => {
     toggleIsLoading(true);
     await connect();
@@ -44,23 +40,37 @@ export const StateContextProvider = ({ children }) => {
     toggleIsLoading(false);
   };
 
-  const updateRole = async () => {
-    if (!address) {
-      toogleRole(null);
-      return;
-    }
-    if (!isAdmin) {
-      toogleRole(null);
-      return;
-    }
-    isSuperAdmin ? toogleRole("super") : toogleRole("admin");
+  const registerAdmin = async (adminAddress) => {
+    const res = await adminContract.registerAdmin(adminAddress);
+    return res;
   };
 
+  const deleteAdmin = async (adminAddress) => {
+    const res = await adminContract.unregisterAdmin(adminAddress);
+    return res;
+  };
+
+  const isAdmin = async () => await adminContract.isAdmin(address);
+
+  const isSuperAdmin = async () => await adminContract.isSuperAdmin();
+
   const getAdmins = async () => {
-    toggleIsLoading(true);
     const admins = await adminContract.getAdmins();
-    toggleIsLoading(false);
     return admins.slice(1);
+  };
+
+  const updateRole = async () => {
+    if (!address) {
+      toggleRole(null);
+      return;
+    }
+    const admin = await isAdmin();
+    if (!admin) {
+      toggleRole(null);
+      return;
+    }
+    const superAdmin = await isSuperAdmin();
+    superAdmin ? toggleRole("super") : toggleRole("admin");
   };
 
   return (
@@ -72,8 +82,11 @@ export const StateContextProvider = ({ children }) => {
         role,
         updateRole,
         getAdmins,
+        registerAdmin,
+        deleteAdmin,
         isMismatched,
         isLoading,
+        toggleIsLoading,
       }}
     >
       {children}

@@ -12,8 +12,8 @@ import Image from "next/image";
 import { useStateContext } from "@component/context";
 
 export default function Home() {
-  const { connectWallet, isLoading } = useStateContext();
-  
+  const { connectWallet } = useStateContext();
+
   return (
     <Paper shadow="xs" p="md">
       <Grid justify="center" align="center">
@@ -45,7 +45,6 @@ export default function Home() {
                 variant="gradient"
                 gradient={{ from: "teal", to: "blue", deg: 60 }}
                 size="xl"
-                loading={isLoading}
                 onClick={connectWallet}
               >
                 Connect Wallet

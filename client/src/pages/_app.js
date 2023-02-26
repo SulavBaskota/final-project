@@ -49,7 +49,7 @@ export default function App(props) {
         <MantineProvider
           withGlobalStyles
           withNormalizeCSS
-          theme={{ colorScheme }}
+          theme={{ colorScheme, loader: "bars" }}
         >
           <ThirdwebProvider activeChain={ganacheLocalhost}>
             <StateContextProvider>
