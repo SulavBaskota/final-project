@@ -5,6 +5,7 @@ import { getCookie, setCookie } from "cookies-next";
 import Layout from "@component/components/Layout";
 import { ThirdwebProvider } from "@thirdweb-dev/react";
 import { StateContextProvider } from "@component/context";
+import { NotificationsProvider } from "@mantine/notifications";
 
 export default function App(props) {
   const { Component, pageProps } = props;
@@ -51,13 +52,15 @@ export default function App(props) {
           withNormalizeCSS
           theme={{ colorScheme, loader: "bars" }}
         >
-          <ThirdwebProvider activeChain={ganacheLocalhost}>
-            <StateContextProvider>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </StateContextProvider>
-          </ThirdwebProvider>
+          <NotificationsProvider>
+            <ThirdwebProvider activeChain={ganacheLocalhost}>
+              <StateContextProvider>
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </StateContextProvider>
+            </ThirdwebProvider>
+          </NotificationsProvider>
         </MantineProvider>
       </ColorSchemeProvider>
     </>

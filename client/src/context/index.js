@@ -76,14 +76,20 @@ export const StateContextProvider = ({ children }) => {
     superAdmin ? toggleRole("super") : toggleRole("admin");
   };
 
+  const getRevertMessage = (error) => {
+    return error.data.message.split("revert")[1].slice(1);
+  };
+
   return (
     <StateContext.Provider
       value={{
         address,
         admins,
+        adminContract,
         connectWallet,
         deleteAdmin,
         disconnectWallet,
+        getRevertMessage,
         isMismatched,
         isLoading,
         registerAdmin,
