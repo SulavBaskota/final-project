@@ -3,9 +3,9 @@ import {
   Text,
   Stack,
   Grid,
-  Paper,
   Button,
   MediaQuery,
+  Container,
 } from "@mantine/core";
 import bidding from "/public/bidding.png";
 import Image from "next/image";
@@ -15,14 +15,14 @@ export default function Home() {
   const { connectWallet } = useStateContext();
 
   return (
-    <Paper shadow="xs" p="md">
+    <Container>
       <Grid justify="center" align="center">
         <Grid.Col xs={12} md={6}>
           <Center>
             <Image
               src={bidding}
               height={500}
-              width={500}
+              width={450}
               priority
               alt="Banner"
             />
@@ -53,6 +53,6 @@ export default function Home() {
           </Stack>
         </Grid.Col>
       </Grid>
-    </Paper>
+    </Container>
   );
 }

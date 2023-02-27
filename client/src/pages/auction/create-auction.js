@@ -1,114 +1,86 @@
-import { use, useState } from "react";
+import { useState } from "react";
 import {
   Container,
-  TextInput,
-  Stack,
-  Group,
+  Stepper,
+  Grid,
+  Text,
   Button,
   Box,
-  Modal,
-  SimpleGrid,
-  Textarea,
-  FileInput,
+  Center,
+  Group,
+  Stack,
+  Paper,
 } from "@mantine/core";
-import { DatePicker, TimeInput } from "@mantine/dates";
-import { useRouter } from "next/router";
+import { STEPPER_LIST } from "@component/constants/stepper";
+import { SHIPPING_DETAILS } from "@component/constants/shippingDetails";
+import deliveryPic from "public/delivery.png";
+import CreateAuctionForm from "@component/components/CreateAuctionForm";
+import Image from "next/image";
 
 export default function CreateAuction() {
-  const router = useRouter();
-  const [opened, setOpened] = useState(true);
-  const [startDate, setStartDate] = useState(new Date());
-  const [startTime, setStartTime] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
-
-  const handleClose = () => {
-    setOpened(false);
-    router.back();
-  };
-
-  const handleSubmit = async () => {
-    const auctionStartTime = new Date(
-      startDate.getFullYear(),
-      startDate.getMonth(),
-      startDate.getDate(),
-      startTime.getHours(),
-      startTime.getMinutes()
-    );
-    const auctionEndTime = new Date(
-      endDate.getFullYear(),
-      endDate.getMonth(),
-      endDate.getDate(),
-      endTime.getHours(),
-      endTime.getMinutes()
-    );
-    console.log(auctionStartTime.valueOf() / 1000);
-    console.log(auctionEndTime.valueOf() / 1000);
-  };
-
+  const [opened, setOpened] = useState(false);
   return (
-    <Modal opened={opened} title="Auction Details" onClose={handleClose}>
-      <TextInput label="Title" placeholder="Title" withAsterisk />
-      <TextInput
-        label="Minimum Bid"
-        type="number"
-        placeholder="Minimum Bid in ETH"
-        withAsterisk
-        mt="md"
-      />
-      <SimpleGrid cols={2} mt="md">
-        <DatePicker
-          label="Start Date"
-          value={startDate}
-          onChange={setStartDate}
-          withAsterisk
-        />
-        <TimeInput
-          label="Start Time"
-          value={startTime}
-          onChange={setStartTime}
-          withAsterisk
-        />
-        <DatePicker
-          label="End Date"
-          value={endDate}
-          onChange={setEndDate}
-          withAsterisk
-        />
-        <TimeInput
-          label="End Time"
-          value={endTime}
-          onChange={setEndTime}
-          withAsterisk
-        />
-      </SimpleGrid>
-      <FileInput
-        label="Item Images"
-        placeholder="Upload files"
-        multiple
-        accept="image/*"
-        withAsterisk
-        mt="md"
-      />
-      <Textarea
-        placeholder="Item Description"
-        label="Description"
-        minRows={2}
-        maxRows={4}
-        withAsterisk
-        mt="md"
-      />
-      <Textarea
-        placeholder="Return Address"
-        label="Return Address"
-        minRows={2}
-        maxRows={4}
-        withAsterisk
-        mt="md"
-      />
-      <Box mt="md" sx={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button onClick={handleSubmit}>Submit</Button>
-      </Box>
-    </Modal>
+    <Container>
+      <CreateAuctionForm opened={opened} setOpened={setOpened} />
+      <Grid>
+        <Grid.Col xs={12} md={6}>
+          <Center>
+            <Stack>
+              <Text fz="xl">Auction Registration Process</Text>
+              <Stepper orientation="vertical" active={STEPPER_LIST.length}>
+                {STEPPER_LIST.map((item, index) => (
+                  <Stepper.Step
+                    key={index}
+                    label={`Step ${index + 1}`}
+                    description={item}
+                    completedIcon={index + 1}
+                  />
+                ))}
+              </Stepper>
+            </Stack>
+          </Center>
+        </Grid.Col>
+        <Grid.Col xs={12} md={6}>
+          <Center>
+            <Image src={deliveryPic} height={400} width={400} />
+          </Center>
+        </Grid.Col>
+        <Grid.Col xs={12}>
+          <Paper shadow="sm" p="xl">
+            <Grid justify="center" align="flex-start">
+              <Grid.Col xs={12} sm={6}>
+                <Center>
+                  <Box>
+                    <Text fz="xl">Auction Item Shipping Details:</Text>
+                    {SHIPPING_DETAILS.map((item, index) => (
+                      <Text fz="md" key={index}>
+                        {item}
+                      </Text>
+                    ))}
+
+                    <Text fz="md" fs="italic">
+                      <span style={{ color: "red" }}>*</span>Please use auction
+                      address as sender name
+                    </Text>
+                  </Box>
+                </Center>
+              </Grid.Col>
+              <Grid.Col xs={12} sm={6}>
+                <Center>
+                  <Button
+                    variant="gradient"
+                    gradient={{ from: "teal", to: "blue", deg: 60 }}
+                    size="xl"
+                    onClick={() => setOpened(true)}
+                  >
+                    Create Auction
+                  </Button>
+                </Center>
+              </Grid.Col>
+            </Grid>
+          </Paper>
+        </Grid.Col>
+      </Grid>
+    </Container>
   );
 }
