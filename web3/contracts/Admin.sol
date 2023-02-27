@@ -1,19 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-error NotSuperAdmin();
-error CannotDeleteSuperAdmin();
-error AdminAlreadyRegistered();
-error AddressNotAdmin();
-error InvalidAddress();
-
 contract Admin {
     address public immutable superAdminAddress;
     mapping(address => bool) public adminAddressMap;
     address[] public adminAddressArray;
 
     modifier onlySuperAdmin() {
-        if (msg.sender != superAdminAddress) revert NotSuperAdmin();
+        if (msg.sender != superAdminAddress)
+            revert("Sender is not super admin");
         _;
     }
 
@@ -24,17 +19,19 @@ contract Admin {
     }
 
     function registerAdmin(address adminAddress) external onlySuperAdmin {
-        if (adminAddress == address(0)) revert InvalidAddress();
+        if (adminAddress == address(0)) revert("Invalid address");
         if (adminAddressMap[adminAddress] == true)
-            revert AdminAlreadyRegistered();
+            revert("Address already resgistered");
         adminAddressMap[adminAddress] = true;
         adminAddressArray.push(adminAddress);
     }
 
     function unregisterAdmin(address adminAddress) external onlySuperAdmin {
-        if (adminAddress == address(0)) revert InvalidAddress();
-        if (adminAddress == superAdminAddress) revert CannotDeleteSuperAdmin();
-        if (adminAddressMap[adminAddress] == false) revert AddressNotAdmin();
+        if (adminAddress == address(0)) revert("Invalid address");
+        if (adminAddress == superAdminAddress)
+            revert("Cannot delete super admin");
+        if (adminAddressMap[adminAddress] == false)
+            revert("Address is not admin");
         delete adminAddressMap[adminAddress];
         uint length = adminAddressArray.length;
         for (uint i = 0; i < length; i++) {
