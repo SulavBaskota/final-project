@@ -6,7 +6,7 @@ const { blindAuctions } = require("../constants/blindAuctions");
 const hardhatChains = ["hardhat", "localhost"];
 
 module.exports = async ({ deployments }) => {
-  if (hardhatChains.includes(network.name)) {
+  if (!hardhatChains.includes(network.name)) {
     const { log } = deployments;
     const accounts = await ethers.getSigners();
     const deployer = accounts[0];

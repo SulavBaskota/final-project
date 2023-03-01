@@ -10,7 +10,7 @@ const blindAuctions = [
     startTime: currentTimePlusHours(0.1),
     endTime: currentTimePlusHours(0.2),
     minimumBid: ethers.utils.parseEther("1"),
-    cid: "bafybeia4qyidtsyayxpd3gjsnvjzdaadku4u5be3gm6zqy45bywixzqgwe",
+    cid: "https://gateway.ipfscdn.io/ipfs/QmSdn7fERhNW76YTZcCHjpcj7KgBSmvEqULkVSeLmxTNkT/0",
   },
   {
     seller: 7,

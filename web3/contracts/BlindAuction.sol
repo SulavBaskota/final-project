@@ -39,6 +39,9 @@ contract BlindAuction {
     uint private immutable mimimumBid;
     uint private immutable revealTime;
     string private cid;
+    string private title;
+    string private description;
+    string private returnAddress;
     address payable private immutable seller;
     address private immutable adminContractAddress;
     address[] private bidders;
@@ -114,10 +117,13 @@ contract BlindAuction {
 
     /**Constructor */
     constructor(
+        string memory _title,
         uint _startTime,
         uint _endTime,
         uint _minimumBid,
         string memory _cid,
+        string memory _description,
+        string memory _returnAddress,
         address _adminContractAddress,
         address payable sellerAddress
     ) {
@@ -126,12 +132,15 @@ contract BlindAuction {
             _endTime < _startTime + MINIMUM_AUCTION_DURATION
         ) revert InvalidAuctionPeriod();
         seller = sellerAddress;
+        title = _title;
         startTime = _startTime;
         endTime = _endTime;
         revealTime = _endTime + REVEAL_PERIOD;
         auctionState = AuctionState.UNVERIFIED;
         mimimumBid = _minimumBid;
         cid = _cid;
+        description = _description;
+        returnAddress = _returnAddress;
         adminContractAddress = _adminContractAddress;
     }
 
