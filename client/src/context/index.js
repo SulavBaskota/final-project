@@ -1,12 +1,19 @@
 import { createContext, useContext, useState } from "react";
 import { ethers } from "ethers";
-import { adminAbi, adminContractAddress } from "@component/constants";
+import {
+  adminAbi,
+  adminContractAddress,
+  blindAuctionFactoryAbi,
+  blindAuctionFactoryContractAddress,
+} from "@component/constants";
 import {
   useAddress,
   useDisconnect,
   useMetamask,
   useNetworkMismatch,
   useSigner,
+  useStorage,
+  useStorageUpload,
 } from "@thirdweb-dev/react";
 import { useToggle } from "@mantine/hooks";
 
@@ -22,10 +29,18 @@ export const StateContextProvider = ({ children }) => {
   const disconnect = useDisconnect();
   const isMismatched = useNetworkMismatch();
   const signer = useSigner();
+  const storage = useStorage();
+  const { mutateAsync: upload } = useStorageUpload();
 
   const adminContract = new ethers.Contract(
     adminContractAddress,
     adminAbi,
+    signer
+  );
+
+  const blindAuctionFactoryContract = new ethers.Contract(
+    blindAuctionFactoryContractAddress,
+    blindAuctionFactoryAbi,
     signer
   );
 
@@ -80,6 +95,38 @@ export const StateContextProvider = ({ children }) => {
     return error.data.message.split("revert")[1].slice(1);
   };
 
+  const uploadToIpfs = async (images) => {
+    const cid = await upload({
+      data: [images],
+      options: {
+        uploadWithGatewayUrl: true,
+        uploadWithoutDirectory: false,
+      },
+    });
+    return cid[0];
+  };
+
+  const downloadFromIpfs = async (cid) => {
+    const images = await (await storage.download(cid)).text();
+    return images;
+  };
+
+  const createAuction = async (params) => {
+    const STAKE = await blindAuctionFactoryContract.STAKE();
+    const txResponse =
+      await blindAuctionFactoryContract.createBlindAuctionContract(
+        params._title,
+        params._startTime,
+        params._endTime,
+        params._minimumBid,
+        params._cid,
+        params._description,
+        params._shippingAddress,
+        { value: STAKE }
+      );
+    console.log(txResponse);
+  };
+
   return (
     <StateContext.Provider
       value={{
@@ -87,8 +134,10 @@ export const StateContextProvider = ({ children }) => {
         admins,
         adminContract,
         connectWallet,
+        createAuction,
         deleteAdmin,
         disconnectWallet,
+        downloadFromIpfs,
         getRevertMessage,
         isMismatched,
         isLoading,
@@ -97,6 +146,7 @@ export const StateContextProvider = ({ children }) => {
         toggleIsLoading,
         updateAdmins,
         updateRole,
+        uploadToIpfs,
       }}
     >
       {children}

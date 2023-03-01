@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { Button, Modal, Stack, Box, TextInput } from "@mantine/core";
 import { useStateContext } from "@component/context";
 import { showNotification } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons";
+import { IconCheck } from "@tabler/icons";
 
 export default function RegisterAdmin({ opened, setOpened }) {
   const [newAddress, setNewAddress] = useState("");
@@ -17,6 +17,9 @@ export default function RegisterAdmin({ opened, setOpened }) {
         toggleIsLoading(true);
         const res = await registerAdmin(newAddress);
         await res.wait();
+        setNewAddress("");
+        setOpened(false);
+        setError("");
         showNotification({
           autoClose: 5000,
           title: "Success!!",
@@ -27,16 +30,8 @@ export default function RegisterAdmin({ opened, setOpened }) {
         await updateAdmins();
       } catch (e) {
         const revertMessage = getRevertMessage(e);
-        showNotification({
-          autoClose: 5000,
-          title: "Failed!!",
-          message: revertMessage,
-          color: "red",
-          icon: <IconX size={20} />,
-        });
+        setError(revertMessage);
       } finally {
-        setNewAddress("");
-        setOpened(false);
         toggleIsLoading(false);
       }
     } else {

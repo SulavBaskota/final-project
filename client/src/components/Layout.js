@@ -24,7 +24,11 @@ export default function Layout({ children }) {
       navbar={<MyNavbar opened={opened} />}
       header={<MyHeader opened={opened} setOpened={setOpened} />}
     >
-      <LoadingOverlay visible={isLoading} overlayBlur={2} />
+      <LoadingOverlay
+        visible={isLoading}
+        overlayBlur={2}
+        transitionDuration={500}
+      />
       {children}
     </AppShell>
   );

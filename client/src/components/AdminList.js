@@ -1,21 +1,38 @@
 import { useStateContext } from "@component/context";
 import { Table, ActionIcon, Center } from "@mantine/core";
-import { IconUserX } from "@tabler/icons";
+import { IconUserX, IconCheck, IconX } from "@tabler/icons";
+import { showNotification } from "@mantine/notifications";
 
 export default function AdminList({ rows, activePage, itemPerPage, setPage }) {
-  const { deleteAdmin, updateAdmins, toggleIsLoading } = useStateContext();
+  const { deleteAdmin, updateAdmins, toggleIsLoading, getRevertMessage } =
+    useStateContext();
 
   const handleDelete = async (adminAddress) => {
     try {
       toggleIsLoading(true);
       const res = await deleteAdmin(adminAddress);
-      console.log(res);
       await res.wait();
+      showNotification({
+        autoClose: 5000,
+        title: "Success!!",
+        message: "Admin address unregistered",
+        color: "teal",
+        icon: <IconCheck size={20} />,
+      });
       await updateAdmins();
+      if (rows.length === 1) {
+        setPage(activePage - 1);
+      }
     } catch (e) {
-      console.log(e);
+      const revertMessage = getRevertMessage(e);
+      showNotification({
+        autoClose: 5000,
+        title: "Failed!!",
+        message: revertMessage,
+        color: "red",
+        icon: <IconX size={20} />,
+      });
     } finally {
-      setPage(1);
       toggleIsLoading(false);
     }
   };
