@@ -12,7 +12,13 @@ import Image from "next/image";
 import { useStateContext } from "@component/context";
 
 export default function WalletNotConnected() {
-  const { connectWallet } = useStateContext();
+  const { connectWallet, toggleIsLoading } = useStateContext();
+
+  const handleConnect = async () => {
+    toggleIsLoading();
+    await connectWallet();
+    toggleIsLoading();
+  };
 
   return (
     <Container>
@@ -45,7 +51,7 @@ export default function WalletNotConnected() {
                 variant="gradient"
                 gradient={{ from: "teal", to: "blue", deg: 60 }}
                 size="xl"
-                onClick={connectWallet}
+                onClick={handleConnect}
               >
                 Connect Wallet
               </Button>

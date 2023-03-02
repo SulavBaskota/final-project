@@ -24,7 +24,7 @@ export default function AuctionMediaCard({ auction }) {
           padding="lg"
           radius="md"
           withBorder
-          sx={{ minWidth: 300 }}
+          sx={{ minWidth: 250 }}
         >
           <Card.Section>
             <Image src={images[0]} height={200} alt="Item Image" />

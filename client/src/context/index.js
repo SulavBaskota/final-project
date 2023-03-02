@@ -33,49 +33,45 @@ export const StateContextProvider = ({ children }) => {
   const storage = useStorage();
   const { mutateAsync: upload } = useStorageUpload();
 
-  const adminContract = new ethers.Contract(
-    adminContractAddress,
-    adminAbi,
-    signer
-  );
+  const adminContract = new ethers.Contract(adminContractAddress, adminAbi);
 
-  const blindAuctionFactoryContract = new ethers.Contract(
+  const BAFContract = new ethers.Contract(
     blindAuctionFactoryContractAddress,
-    blindAuctionFactoryAbi,
-    signer
+    blindAuctionFactoryAbi
   );
 
-  const connectWallet = async () => {
-    toggleIsLoading(true);
-    await connect();
-    toggleIsLoading(false);
-  };
+  const connectWallet = async () => await connect();
 
-  const disconnectWallet = async () => {
-    toggleIsLoading(true);
-    await disconnect();
-    toggleIsLoading(false);
-  };
+  const disconnectWallet = async () => await disconnect();
 
   const registerAdmin = async (adminAddress) => {
-    const txResponse = await adminContract.registerAdmin(adminAddress);
+    const signedAdminContract = adminContract.connect(signer);
+    const txResponse = await signedAdminContract.registerAdmin(adminAddress);
     return txResponse;
   };
 
   const deleteAdmin = async (adminAddress) => {
-    const txResponse = await adminContract.unregisterAdmin(adminAddress);
+    const signedAdminContract = adminContract.connect(signer);
+    const txResponse = await signedAdminContract.unregisterAdmin(adminAddress);
     return txResponse;
   };
 
-  const isAdmin = async () => await adminContract.isAdmin(address);
+  const isAdmin = async () => {
+    const signedAdminContract = adminContract.connect(signer);
+    const txResonse = await signedAdminContract.isAdmin(address);
+    return txResonse;
+  };
 
-  const isSuperAdmin = async () => await adminContract.isSuperAdmin();
+  const isSuperAdmin = async () => {
+    const signedAdminContract = adminContract.connect(signer);
+    const txResonse = await signedAdminContract.isSuperAdmin();
+    return txResonse;
+  };
 
   const updateAdmins = async () => {
-    if (adminContract) {
-      const adminList = await adminContract.getAdmins();
-      setAdmins(adminList.slice(1));
-    }
+    const signedAdminContract = adminContract.connect(signer);
+    const adminList = await signedAdminContract.getAdmins();
+    setAdmins(adminList.slice(1));
   };
 
   const updateRole = async () => {
@@ -83,6 +79,7 @@ export const StateContextProvider = ({ children }) => {
       toggleRole(null);
       return;
     }
+
     const admin = await isAdmin();
     if (!admin) {
       toggleRole(null);
@@ -113,23 +110,25 @@ export const StateContextProvider = ({ children }) => {
   };
 
   const createAuction = async (params) => {
-    const STAKE = await blindAuctionFactoryContract.STAKE();
-    const txResponse =
-      await blindAuctionFactoryContract.createBlindAuctionContract(
-        params._title,
-        params._startTime,
-        params._endTime,
-        params._minimumBid,
-        params._cid,
-        params._description,
-        params._shippingAddress,
-        { value: STAKE }
-      );
+    const signedBAFContract = BAFContract.connect(signer);
+    const STAKE = await signedBAFContract.STAKE();
+    const txResponse = await signedBAFContract.createBlindAuctionContract(
+      params._title,
+      params._startTime,
+      params._endTime,
+      params._minimumBid,
+      params._cid,
+      params._description,
+      params._shippingAddress,
+      { value: STAKE }
+    );
     return txResponse;
   };
 
   const getBlindAuctions = async () => {
-    const blindAuctions = await blindAuctionFactoryContract.getBlindAuctions();
+    const signedBAFContract = BAFContract.connect(signer);
+
+    const blindAuctions = await signedBAFContract.getBlindAuctions();
 
     const parsedBlindAuctions = blindAuctions.map((blindAuction, index) => ({
       index: index,
@@ -168,6 +167,7 @@ export const StateContextProvider = ({ children }) => {
         address,
         admins,
         adminContract,
+        BAFContract,
         connectWallet,
         createAuction,
         deleteAdmin,
@@ -179,6 +179,7 @@ export const StateContextProvider = ({ children }) => {
         isLoading,
         registerAdmin,
         role,
+        signer,
         toggleIsLoading,
         updateAdmins,
         updateRole,

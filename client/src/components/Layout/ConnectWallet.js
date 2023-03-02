@@ -5,7 +5,14 @@ import { buttonStyles } from "@component/styles/customStyles";
 import { useStateContext } from "@component/context";
 
 export default function ConnectWallet() {
-  const { address, connectWallet, disconnectWallet } = useStateContext();
+  const { address, connectWallet, disconnectWallet, toggleIsLoading } =
+    useStateContext();
+
+  const handleConnect = async () => {
+    toggleIsLoading();
+    await connectWallet();
+    toggleIsLoading();
+  };
 
   return (
     <>
@@ -14,7 +21,7 @@ export default function ConnectWallet() {
           leftIcon={<IconWallet size={16} />}
           fullWidth
           size="lg"
-          onClick={connectWallet}
+          onClick={handleConnect}
         >
           Connect Wallet
         </Button>

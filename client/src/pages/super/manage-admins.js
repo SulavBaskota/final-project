@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { useStateContext } from "@component/context";
 import { IconUserPlus } from "@tabler/icons";
-import Custom401 from "../401";
+import Unauthorized from "../../components/Unauthorized";
 import RegisterAdmin from "@component/components/RegisterAdmin";
 import AdminList from "@component/components/AdminList";
 import EmptyAdminList from "@component/components/EmptyAdminList";
@@ -22,11 +22,8 @@ export default function ManageAdmins() {
   const [opened, setOpened] = useState(false);
   const [total, setTotal] = useState(1);
   const [rows, setRows] = useState([]);
-
   const [visible, setVisible] = useState(true);
-
   const { start, clear } = useTimeout(() => setVisible(false), 500);
-
   const itemPerPage = 5;
 
   const fetchAdmins = async () => {
@@ -93,7 +90,7 @@ export default function ManageAdmins() {
           )}
         </Container>
       ) : (
-        <Custom401 />
+        <Unauthorized />
       )}
     </>
   );

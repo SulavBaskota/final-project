@@ -11,7 +11,7 @@ import {
 import logo from "/public/logo.png";
 import Image from "next/image";
 import Link from "next/link";
-import ColorSchemeToggle from "./ColorSchemeToogle";
+import ColorSchemeToggle from "../ColorSchemeToogle";
 import { IconSearch } from "@tabler/icons";
 
 export default function MyHeader({ opened, setOpened }) {

@@ -4,10 +4,7 @@ import { getCookie, setCookie } from "cookies-next";
 import { ThirdwebProvider } from "@thirdweb-dev/react";
 import { StateContextProvider } from "@component/context";
 import { NotificationsProvider } from "@mantine/notifications";
-import {
-  ganacheLocalhost,
-  hardhatLocalhost,
-} from "@component/constants/activeChainConfig";
+import { ganacheLocalhost } from "@component/constants/activeChainConfig";
 import Head from "next/head";
 import Layout from "@component/components/Layout";
 

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { AppShell, useMantineTheme, LoadingOverlay } from "@mantine/core";
+import { useStateContext } from "@component/context";
 import MyNavbar from "./MyNavbar";
 import MyHeader from "./MyHeader";
-import { useStateContext } from "@component/context";
 
 export default function Layout({ children }) {
   const theme = useMantineTheme();
