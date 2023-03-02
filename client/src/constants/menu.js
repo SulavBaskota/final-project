@@ -4,7 +4,7 @@ import {
   IconCheckupList,
   IconTruckDelivery,
   IconUsers,
-  IconBookmarks
+  IconBookmarks,
 } from "@tabler/icons";
 
 const iconSize = 16;
@@ -23,7 +23,7 @@ export const USER_MENU = [
     color: "teal",
   },
   {
-    label: "My Wishlist",
+    label: "Bookmarks",
     icon: <IconBookmarks size={iconSize} />,
     href: "/bookmarks",
     color: "grape",
@@ -32,15 +32,15 @@ export const USER_MENU = [
 
 export const ADMIN_MENU = [
   {
-    label: "Verify Auction",
+    label: "Evaluate Auctions",
     icon: <IconCheckupList size={iconSize} />,
-    href: "/admin/verify-auction",
+    href: "/admin/evaluate-auctions",
     color: "orange",
   },
   {
-    label: "Ship Item",
+    label: "Ship Items",
     icon: <IconTruckDelivery size={iconSize} />,
-    href: "/admin/ship-item",
+    href: "/admin/ship-items",
     color: "violet",
   },
 ];

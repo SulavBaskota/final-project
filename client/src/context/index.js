@@ -5,6 +5,7 @@ import {
   adminContractAddress,
   blindAuctionFactoryAbi,
   blindAuctionFactoryContractAddress,
+  AUCTIONSTATE,
 } from "@component/constants";
 import {
   useAddress,
@@ -57,13 +58,13 @@ export const StateContextProvider = ({ children }) => {
   };
 
   const registerAdmin = async (adminAddress) => {
-    const res = await adminContract.registerAdmin(adminAddress);
-    return res;
+    const txResponse = await adminContract.registerAdmin(adminAddress);
+    return txResponse;
   };
 
   const deleteAdmin = async (adminAddress) => {
-    const res = await adminContract.unregisterAdmin(adminAddress);
-    return res;
+    const txResponse = await adminContract.unregisterAdmin(adminAddress);
+    return txResponse;
   };
 
   const isAdmin = async () => await adminContract.isAdmin(address);
@@ -107,7 +108,7 @@ export const StateContextProvider = ({ children }) => {
   };
 
   const downloadFromIpfs = async (cid) => {
-    const images = await (await storage.download(cid)).text();
+    const images = await storage.downloadJSON(cid);
     return images;
   };
 
@@ -124,7 +125,41 @@ export const StateContextProvider = ({ children }) => {
         params._shippingAddress,
         { value: STAKE }
       );
-    console.log(txResponse);
+    return txResponse;
+  };
+
+  const getBlindAuctions = async () => {
+    const blindAuctions = await blindAuctionFactoryContract.getBlindAuctions();
+
+    const parsedBlindAuctions = blindAuctions.map((blindAuction, index) => ({
+      index: index,
+      id: blindAuction.id,
+      title: blindAuction.title,
+      minimumBid: ethers.utils.formatUnits(blindAuction.minimumBid, "ether"),
+      startTime: blindAuction.startTime.toNumber(),
+      endTime: blindAuction.endTime.toNumber(),
+      revealTime: blindAuction.revealTime.toNumber(),
+      cid: blindAuction.cid,
+      description: blindAuction.description,
+      seller: blindAuction.seller,
+      auctionState: blindAuction.auctionState,
+      itemState: blindAuction.itemState,
+      bidders: blindAuction.bidders,
+      highestBidder: blindAuction.highestBidder,
+      highestBid: blindAuction.highestBid,
+      evaluationMessage: blindAuction.evaluationMessage,
+      evaluatedBy: blindAuction.evaluatedBy,
+    }));
+
+    return parsedBlindAuctions;
+  };
+
+  const getUnverifiedAuctions = async () => {
+    const allBlindAuctions = await getBlindAuctions();
+    const filteredBlindAuctions = allBlindAuctions.filter(
+      (blindAuction) => blindAuction.auctionState === AUCTIONSTATE.UNVERIFIED
+    );
+    return filteredBlindAuctions;
   };
 
   return (
@@ -139,6 +174,7 @@ export const StateContextProvider = ({ children }) => {
         disconnectWallet,
         downloadFromIpfs,
         getRevertMessage,
+        getUnverifiedAuctions,
         isMismatched,
         isLoading,
         registerAdmin,

@@ -15,8 +15,8 @@ export default function RegisterAdmin({ opened, setOpened }) {
     if (ethers.utils.isAddress(newAddress)) {
       try {
         toggleIsLoading(true);
-        const res = await registerAdmin(newAddress);
-        await res.wait();
+        const txResponse = await registerAdmin(newAddress);
+        await txResponse.wait();
         setNewAddress("");
         setOpened(false);
         setError("");
