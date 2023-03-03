@@ -5,10 +5,10 @@ import { useStateContext } from "@component/context";
 import { showNotification } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons";
 
-export default function RegisterAdmin({ opened, setOpened }) {
+export default function RegisterAdmin({ opened, setOpened, fetchAdmins }) {
   const [newAddress, setNewAddress] = useState("");
   const [error, setError] = useState("");
-  const { updateAdmins, toggleIsLoading, registerAdmin, getRevertMessage } =
+  const { toggleIsLoading, registerAdmin, getRevertMessage } =
     useStateContext();
 
   const handleRegister = async () => {
@@ -27,7 +27,7 @@ export default function RegisterAdmin({ opened, setOpened }) {
           color: "teal",
           icon: <IconCheck size={20} />,
         });
-        await updateAdmins();
+        await fetchAdmins();
       } catch (e) {
         const revertMessage = getRevertMessage(e);
         setError(revertMessage);
@@ -46,23 +46,21 @@ export default function RegisterAdmin({ opened, setOpened }) {
   };
 
   return (
-    <>
-      <Modal opened={opened} onClose={handleClose} title="Add Admin">
-        <Stack>
-          <TextInput
-            placeholder="0x1111111111111111111111111111111111111111"
-            label="Address"
-            value={newAddress}
-            onChange={(e) => setNewAddress(e.target.value)}
-            error={error}
-            data-autofocus
-            autoComplete="off"
-          />
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button onClick={handleRegister}>Register</Button>
-          </Box>
-        </Stack>
-      </Modal>
-    </>
+    <Modal opened={opened} onClose={handleClose} title="Add Admin">
+      <Stack>
+        <TextInput
+          placeholder="0x1111111111111111111111111111111111111111"
+          label="Address"
+          value={newAddress}
+          onChange={(e) => setNewAddress(e.target.value)}
+          error={error}
+          data-autofocus
+          autoComplete="off"
+        />
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button onClick={handleRegister}>Register</Button>
+        </Box>
+      </Stack>
+    </Modal>
   );
 }

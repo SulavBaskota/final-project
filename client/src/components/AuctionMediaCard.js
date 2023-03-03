@@ -1,9 +1,9 @@
-import { Card, Image, Text, Stack, Button, Group, Box } from "@mantine/core";
+import { Card, Image, Text, Stack, Group, Box } from "@mantine/core";
 import { useStateContext } from "@component/context";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 
-export default function AuctionMediaCard({ auction }) {
+export default function AuctionMediaCard({ auction, cardButton }) {
   const { downloadFromIpfs } = useStateContext();
   const [images, setImages] = useState([]);
 
@@ -58,9 +58,7 @@ export default function AuctionMediaCard({ auction }) {
               {auction.description}
             </Text>
           </Box>
-          <Button variant="light" color="blue" fullWidth mt="md" radius="md">
-            Evaluate
-          </Button>
+          {cardButton}
         </Card>
       ) : null}
     </>

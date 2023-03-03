@@ -17,7 +17,8 @@ import EmptyAdminList from "@component/components/EmptyAdminList";
 import { useTimeout } from "@mantine/hooks";
 
 export default function ManageAdmins() {
-  const { role, admins, updateAdmins } = useStateContext();
+  const { role, getAdmins } = useStateContext();
+  const [admins, setAdmins] = useState([]);
   const [activePage, setPage] = useState(1);
   const [opened, setOpened] = useState(false);
   const [total, setTotal] = useState(1);
@@ -27,7 +28,8 @@ export default function ManageAdmins() {
   const itemPerPage = 5;
 
   const fetchAdmins = async () => {
-    await updateAdmins();
+    const data = await getAdmins();
+    setAdmins(data);
   };
 
   useEffect(() => {
@@ -64,7 +66,11 @@ export default function ManageAdmins() {
         <LoadingOverlay visible={visible} overlayBlur={2} />
       ) : role && role === "super" ? (
         <Container>
-          <RegisterAdmin opened={opened} setOpened={setOpened} />
+          <RegisterAdmin
+            opened={opened}
+            setOpened={setOpened}
+            fetchAdmins={fetchAdmins}
+          />
           {admins.length > 0 ? (
             <Stack>
               <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
@@ -77,6 +83,7 @@ export default function ManageAdmins() {
                 activePage={activePage}
                 itemPerPage={itemPerPage}
                 setPage={setPage}
+                fetchAdmins={fetchAdmins}
               />
               <Pagination page={activePage} onChange={setPage} total={total} />
               <MediaQuery largerThan="sm" styles={{ display: "none" }}>

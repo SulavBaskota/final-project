@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 import { ethers } from "ethers";
 import {
   adminAbi,
@@ -23,7 +23,6 @@ const StateContext = createContext();
 export const StateContextProvider = ({ children }) => {
   const [isLoading, toggleIsLoading] = useToggle([false, true]);
   const [role, toggleRole] = useToggle([null, "admin", "super"]);
-  const [admins, setAdmins] = useState([]);
 
   const address = useAddress();
   const connect = useMetamask();
@@ -68,10 +67,10 @@ export const StateContextProvider = ({ children }) => {
     return txResonse;
   };
 
-  const updateAdmins = async () => {
+  const getAdmins = async () => {
     const signedAdminContract = adminContract.connect(signer);
     const adminList = await signedAdminContract.getAdmins();
-    setAdmins(adminList.slice(1));
+    return adminList.slice(1);
   };
 
   const updateRole = async () => {
@@ -161,11 +160,15 @@ export const StateContextProvider = ({ children }) => {
     return filteredBlindAuctions;
   };
 
+  const getAuctionDetailsByIndex = async (auctionIndex) => {
+    const allBlindAuctions = await getBlindAuctions();
+    return allBlindAuctions[auctionIndex];
+  };
+
   return (
     <StateContext.Provider
       value={{
         address,
-        admins,
         adminContract,
         BAFContract,
         connectWallet,
@@ -173,6 +176,8 @@ export const StateContextProvider = ({ children }) => {
         deleteAdmin,
         disconnectWallet,
         downloadFromIpfs,
+        getAdmins,
+        getAuctionDetailsByIndex,
         getRevertMessage,
         getUnverifiedAuctions,
         isMismatched,
@@ -181,7 +186,6 @@ export const StateContextProvider = ({ children }) => {
         role,
         signer,
         toggleIsLoading,
-        updateAdmins,
         updateRole,
         uploadToIpfs,
       }}

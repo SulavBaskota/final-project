@@ -3,9 +3,14 @@ import { Table, ActionIcon, Center } from "@mantine/core";
 import { IconUserX, IconCheck, IconX } from "@tabler/icons";
 import { showNotification } from "@mantine/notifications";
 
-export default function AdminList({ rows, activePage, itemPerPage, setPage }) {
-  const { deleteAdmin, updateAdmins, toggleIsLoading, getRevertMessage } =
-    useStateContext();
+export default function AdminList({
+  rows,
+  activePage,
+  itemPerPage,
+  setPage,
+  fetchAdmins,
+}) {
+  const { deleteAdmin, toggleIsLoading, getRevertMessage } = useStateContext();
 
   const handleDelete = async (adminAddress) => {
     try {
@@ -19,7 +24,7 @@ export default function AdminList({ rows, activePage, itemPerPage, setPage }) {
         color: "teal",
         icon: <IconCheck size={20} />,
       });
-      await updateAdmins();
+      await fetchAdmins();
       if (rows.length === 1) {
         setPage(activePage - 1);
       }
