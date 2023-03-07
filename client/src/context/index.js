@@ -115,7 +115,7 @@ export const StateContextProvider = ({ children }) => {
       params._title,
       params._startTime,
       params._endTime,
-      params._minimumBid,
+      ethers.utils.parseEther(params._minimumBid),
       params._cid,
       params._description,
       params._shippingAddress,
@@ -133,7 +133,7 @@ export const StateContextProvider = ({ children }) => {
       index: index,
       id: blindAuction.id,
       title: blindAuction.title,
-      minimumBid: ethers.utils.formatUnits(blindAuction.minimumBid, "ether"),
+      minimumBid: ethers.utils.formatEther(blindAuction.minimumBid),
       startTime: blindAuction.startTime.toNumber(),
       endTime: blindAuction.endTime.toNumber(),
       revealTime: blindAuction.revealTime.toNumber(),
@@ -160,9 +160,68 @@ export const StateContextProvider = ({ children }) => {
     return filteredBlindAuctions;
   };
 
-  const getAuctionDetailsByIndex = async (auctionIndex) => {
+  const getBlindAuctionById = async (_auctionId) => {
+    const signedBAFContract = BAFContract.connect(signer);
+    const blindAuction = await signedBAFContract.getBlindAuctionById(
+      _auctionId
+    );
+    const parsedBlindAuction = {
+      id: blindAuction.id,
+      title: blindAuction.title,
+      minimumBid: ethers.utils.formatEther(blindAuction.minimumBid),
+      startTime: blindAuction.startTime.toNumber(),
+      endTime: blindAuction.endTime.toNumber(),
+      revealTime: blindAuction.revealTime.toNumber(),
+      cid: blindAuction.cid,
+      description: blindAuction.description,
+      seller: blindAuction.seller,
+      auctionState: blindAuction.auctionState,
+      itemState: blindAuction.itemState,
+      bidders: blindAuction.bidders,
+      highestBidder: blindAuction.highestBidder,
+      highestBid: ethers.utils.formatEther(blindAuction.highestBid),
+      evaluationMessage: blindAuction.evaluationMessage,
+      evaluatedBy: blindAuction.evaluatedBy,
+    };
+    return parsedBlindAuction;
+  };
+
+  const getOpenAuctions = async () => {
     const allBlindAuctions = await getBlindAuctions();
-    return allBlindAuctions[auctionIndex];
+    const filteredBlindAuctions = allBlindAuctions.filter(
+      (blindAuction) => blindAuction.auctionState === AUCTIONSTATE.OPEN
+    );
+    return filteredBlindAuctions;
+  };
+
+  const verifyAuction = async (
+    _auctionId,
+    _itemReceived,
+    _evaluationMessage
+  ) => {
+    const signedBAFContract = BAFContract.connect(signer);
+
+    const txResonse = await signedBAFContract.verifyAuction(
+      _auctionId,
+      _itemReceived,
+      _evaluationMessage
+    );
+    return txResonse;
+  };
+
+  const rejectAuction = async (
+    _auctionId,
+    _itemReceived,
+    _evaluationMessage
+  ) => {
+    const signedBAFContract = BAFContract.connect(signer);
+
+    const txResonse = await signedBAFContract.rejectAuction(
+      _auctionId,
+      _itemReceived,
+      _evaluationMessage
+    );
+    return txResonse;
   };
 
   return (
@@ -177,17 +236,20 @@ export const StateContextProvider = ({ children }) => {
         disconnectWallet,
         downloadFromIpfs,
         getAdmins,
-        getAuctionDetailsByIndex,
+        getBlindAuctionById,
+        getOpenAuctions,
         getRevertMessage,
         getUnverifiedAuctions,
         isMismatched,
         isLoading,
         registerAdmin,
+        rejectAuction,
         role,
         signer,
         toggleIsLoading,
         updateRole,
         uploadToIpfs,
+        verifyAuction,
       }}
     >
       {children}

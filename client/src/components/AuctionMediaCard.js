@@ -1,7 +1,7 @@
 import { Card, Image, Text, Stack, Group, Box } from "@mantine/core";
 import { useStateContext } from "@component/context";
 import { useEffect, useState } from "react";
-import dayjs from "dayjs";
+import AuctionTimingDetails from "./AuctionTimingDetails";
 
 export default function AuctionMediaCard({ auction, cardButton }) {
   const { downloadFromIpfs } = useStateContext();
@@ -34,25 +34,11 @@ export default function AuctionMediaCard({ auction, cardButton }) {
             {auction.title}
           </Text>
 
-          <Group position="apart">
-            <Stack spacing={0}>
-              <Text size="sm" color="teal">
-                Start Time
-              </Text>
-              <Text size="sm" color="dimmed">
-                {dayjs.unix(auction.startTime).format("DD/MM/YY, HH:mm")}
-              </Text>
-            </Stack>
-            <Stack spacing={0} align="flex-end">
-              <Text size="sm" color="orange">
-                End Time
-              </Text>
-              <Text size="sm" color="dimmed">
-                {dayjs.unix(auction.endTime).format("DD/MM/YY, HH:mm")}
-              </Text>
-            </Stack>
-          </Group>
-
+          <AuctionTimingDetails
+            startTime={auction.startTime}
+            endTime={auction.endTime}
+          />
+          
           <Box sx={{ height: 100 }}>
             <Text size="sm" color="dimmed" mt="md" lineClamp={4}>
               {auction.description}

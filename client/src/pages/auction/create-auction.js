@@ -40,9 +40,8 @@ export default function CreateAuction() {
 
   return (
     <>
-      {visible ? (
-        <LoadingOverlay visible={visible} overlayBlur={2} />
-      ) : address ? (
+      {visible && <LoadingOverlay visible={visible} overlayBlur={2} />}
+      {address ? (
         <Container>
           <CreateAuctionForm opened={opened} setOpened={setOpened} />
           <Grid>

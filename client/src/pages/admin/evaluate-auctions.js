@@ -26,15 +26,26 @@ export default function EvaluateAuctions() {
     if (role && (role === "admin" || role === "super")) {
       fetchUnverifiedAuctions();
       const signedBAFContract = BAFContract.connect(signer);
-      signedBAFContract.on("AuctionCreated", (_auctionId) => {
+      signedBAFContract.on("AuctionCreated", () => {
         fetchUnverifiedAuctions();
       });
-      signedBAFContract.on("AuctionCancelled", (_auctionId) => {
+      signedBAFContract.on("AuctionCancelled", () => {
+        fetchUnverifiedAuctions();
+      });
+      signedBAFContract.on("AuctionVerified", () => {
+        fetchUnverifiedAuctions();
+      });
+      signedBAFContract.on("AuctionRejected", () => {
         fetchUnverifiedAuctions();
       });
     }
     return () =>
-      BAFContract.removeAllListeners(["AuctionCreated", "AuctionCancelled"]);
+      BAFContract.removeAllListeners([
+        "AuctionCreated",
+        "AuctionCancelled",
+        "AuctionVerified",
+        "AuctionRejected",
+      ]);
   }, [signer, role]);
 
   useEffect(() => {
@@ -60,9 +71,8 @@ export default function EvaluateAuctions() {
 
   return (
     <>
-      {visible ? (
-        <LoadingOverlay visible={visible} overlayBlur={2} />
-      ) : role && (role === "admin" || role === "super") ? (
+      {visible && <LoadingOverlay visible={visible} overlayBlur={2} />}
+      {role && (role === "admin" || role === "super") ? (
         unVerifiedAuctions.length > 0 ? (
           <Container>
             {opened && (
@@ -76,8 +86,6 @@ export default function EvaluateAuctions() {
               {unVerifiedAuctions.map((auction, index) => (
                 <Grid.Col xs={12} md={6} lg={4} key={index}>
                   <AuctionMediaCard
-                    opened={opened}
-                    setOpened={setOpened}
                     auction={auction}
                     cardButton={<CardButton auction={auction} />}
                   />

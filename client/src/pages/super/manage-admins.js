@@ -62,9 +62,8 @@ export default function ManageAdmins() {
 
   return (
     <>
-      {visible ? (
-        <LoadingOverlay visible={visible} overlayBlur={2} />
-      ) : role && role === "super" ? (
+      {visible && <LoadingOverlay visible={visible} overlayBlur={2} />}
+      {role && role === "super" ? (
         <Container>
           <RegisterAdmin
             opened={opened}
