@@ -2,16 +2,15 @@ import { TextInput, Button, Text, Divider } from "@mantine/core";
 import { useState } from "react";
 import { useStateContext } from "@component/context";
 
-export default function PlaceBid({ auctionId }) {
-  const [deposit, setDeposit] = useState(0);
+export default function RevealBid({ auctionId }) {
   const [trueBid, setTrueBid] = useState(0);
   const [secret, setSecret] = useState("");
-  const { placeBid, toggleIsLoading } = useStateContext();
+  const { revealBid, toggleIsLoading } = useStateContext();
 
   const handleClick = async () => {
     try {
       toggleIsLoading();
-      const txResponse = await placeBid(auctionId, deposit, trueBid, secret);
+      const txResponse = await revealBid(auctionId, trueBid, secret);
       txResponse.wait();
       console.log(txResponse);
     } catch (e) {
@@ -24,17 +23,9 @@ export default function PlaceBid({ auctionId }) {
   return (
     <>
       <Text fz={30} fw={700} align="center">
-        Place Bid
+        Reveal Bid
       </Text>
       <Divider size="lg" />
-      <TextInput
-        placeholder="Your deposit in ETH"
-        label="Deposit amount"
-        type="number"
-        value={deposit}
-        onChange={(e) => setDeposit(e.currentTarget.value)}
-        withAsterisk
-      />
       <TextInput
         placeholder="Your true bid in ETH"
         label="Bid amount"

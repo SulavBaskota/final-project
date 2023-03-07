@@ -89,7 +89,10 @@ export const StateContextProvider = ({ children }) => {
   };
 
   const getRevertMessage = (error) => {
-    return error.data.message.split("revert")[1].slice(1);
+    if (error.code === "ACTION_REJECTED") return "Transaction rejected";
+    if (error.code === -32603)
+      return error.data.message.split("revert")[1].slice(1);
+    return error.reason;
   };
 
   const uploadToIpfs = async (images) => {
@@ -224,12 +227,53 @@ export const StateContextProvider = ({ children }) => {
     return txResonse;
   };
 
+  const placeBid = async (_auctionId, _deposit, _trueBid, _secret) => {
+    const signedBAFContract = BAFContract.connect(signer);
+
+    const secretBytes = ethers.utils.id(_secret);
+    const blindedBid = ethers.utils.solidityKeccak256(
+      ["uint", "bytes32"],
+      [ethers.utils.parseEther(_trueBid), secretBytes]
+    );
+
+    const txResponse = await signedBAFContract.bid(_auctionId, blindedBid, {
+      value: ethers.utils.parseEther(_deposit),
+    });
+    return txResponse;
+  };
+
+  const revealBid = async (_auctionId, _trueBid, _secret) => {
+    const signedBAFContract = BAFContract.connect(signer);
+
+    const secretBytes = ethers.utils.id(_secret);
+
+    const txResponse = await signedBAFContract.reveal(
+      _auctionId,
+      ethers.utils.parseEther(_trueBid),
+      secretBytes
+    );
+    return txResponse;
+  };
+
+  const withdraw = async (_auctionId) => {
+    const signedBAFContract = BAFContract.connect(signer);
+    const txResponse = await signedBAFContract.withdraw(_auctionId);
+    return txResponse;
+  };
+
+  const closeAuction = async (_auctionId) => {
+    const signedBAFContract = BAFContract.connect(signer);
+    const txResponse = await signedBAFContract.auctionEnd(_auctionId);
+    return txResponse;
+  };
+
   return (
     <StateContext.Provider
       value={{
         address,
         adminContract,
         BAFContract,
+        closeAuction,
         connectWallet,
         createAuction,
         deleteAdmin,
@@ -242,14 +286,17 @@ export const StateContextProvider = ({ children }) => {
         getUnverifiedAuctions,
         isMismatched,
         isLoading,
+        placeBid,
         registerAdmin,
         rejectAuction,
+        revealBid,
         role,
         signer,
         toggleIsLoading,
         updateRole,
         uploadToIpfs,
         verifyAuction,
+        withdraw,
       }}
     >
       {children}

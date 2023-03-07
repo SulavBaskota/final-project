@@ -9,12 +9,16 @@ import {
   Paper,
   Divider,
   LoadingOverlay,
+  Text,
 } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import { useTimeout } from "@mantine/hooks";
 import AuctionBadge from "@component/components/AuctionBadge";
 import AuctionDetails from "@component/components/AuctionDetails";
 import PlaceBid from "@component/components/PlaceBid";
+import RevealBid from "@component/components/RevealBid";
+import Withdraw from "@component/components/Withdraw";
+import CloseAuction from "@component/components/CloseAuction";
 import Timers from "@component/components/Timers";
 
 export default function Auction() {
@@ -24,6 +28,9 @@ export default function Auction() {
   const [auction, setAuction] = useState({});
   const [images, setImages] = useState([]);
   const [visible, setVisible] = useState(true);
+  const [startTimePassed, setStartTimePassed] = useState(false);
+  const [endTimePassed, setEndTimePassed] = useState(false);
+  const [revealTimePassed, setRevealTimePassed] = useState(false);
   const { start, clear } = useTimeout(() => setVisible(false), 500);
 
   const fetchBlindAuction = async () => {
@@ -67,6 +74,12 @@ export default function Auction() {
                       startTime={auction.startTime}
                       endTime={auction.endTime}
                       revealTime={auction.revealTime}
+                      startTimePassed={startTimePassed}
+                      setStartTimePassed={setStartTimePassed}
+                      endTimePassed={endTimePassed}
+                      setEndTimePassed={setEndTimePassed}
+                      revealTimePassed={revealTimePassed}
+                      setRevealTimePassed={setRevealTimePassed}
                     />
                   </Stack>
                 </Paper>
@@ -82,11 +95,28 @@ export default function Auction() {
                 <Grid.Col xs={12} md={4}>
                   <Paper shadow="sm" p="md" radius="md" withBorder>
                     <Stack align="stretch">
-                      <PlaceBid />
+                      {startTimePassed && !endTimePassed && (
+                        <PlaceBid auctionId={auction.id} />
+                      )}
+                      {endTimePassed && !revealTimePassed && (
+                        <RevealBid auctionId={auction.id} />
+                      )}
+                      {revealTimePassed && (
+                        <>
+                          <Withdraw auctionId={auction.id} />
+                          <Divider size="lg" />
+                          <CloseAuction auctionId={auction.id} />
+                        </>
+                      )}
                     </Stack>
                   </Paper>
                 </Grid.Col>
               </Grid>
+            </Grid.Col>
+            <Grid.Col>
+              {auction.bidders.map((bidder, index) => (
+                <Text key={index}>{bidder}</Text>
+              ))}
             </Grid.Col>
           </Grid>
         </Container>

@@ -1,12 +1,17 @@
-import { useState } from "react";
 import { Divider } from "@mantine/core";
 import CountDownTimer from "./CountDownTimer";
 
-export default function Timers({ startTime, endTime, revealTime }) {
-  const [startTimePassed, setStartTimePassed] = useState(false);
-  const [endTimePassed, setEndTimePassed] = useState(false);
-  const [revealTimePassed, setRevealTimePassed] = useState(false);
-
+export default function Timers({
+  startTime,
+  endTime,
+  revealTime,
+  startTimePassed,
+  setStartTimePassed,
+  endTimePassed,
+  setEndTimePassed,
+  revealTimePassed,
+  setRevealTimePassed,
+}) {
   return (
     <>
       <CountDownTimer

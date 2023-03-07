@@ -14,13 +14,19 @@ import { useStateContext } from "@component/context";
 import { useEffect, useState } from "react";
 import AuctionTimingDetails from "./AuctionTimingDetails";
 import { showNotification } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons";
+import { IconCheck, IconExclamationCircle } from "@tabler/icons";
 
 export default function EvaluateAuctionModel({ opened, setOpened, auction }) {
   const [images, setImages] = useState([]);
   const [evaluationMessage, setEvaluationMessage] = useState("");
   const [itemReceived, setItemReceived] = useState(false);
-  const { downloadFromIpfs, rejectAuction, verifyAuction } = useStateContext();
+  const {
+    downloadFromIpfs,
+    rejectAuction,
+    verifyAuction,
+    toggleIsLoading,
+    getRevertMessage,
+  } = useStateContext();
 
   const fetchAuctionData = async () => {
     const imageData = await downloadFromIpfs(auction.cid);
@@ -40,6 +46,7 @@ export default function EvaluateAuctionModel({ opened, setOpened, auction }) {
 
   const handleReject = async () => {
     try {
+      toggleIsLoading();
       const txResponse = await rejectAuction(
         auction.id,
         itemReceived,
@@ -50,17 +57,27 @@ export default function EvaluateAuctionModel({ opened, setOpened, auction }) {
       showNotification({
         autoClose: 5000,
         title: "Success!!",
-        message: "Auction created successfully",
+        message: "Auction rejected successfully",
         color: "teal",
         icon: <IconCheck size={20} />,
       });
     } catch (e) {
-      console.log(e);
+      const revertMessage = getRevertMessage(e);
+      showNotification({
+        autoClose: 5000,
+        title: "Error!!",
+        message: revertMessage,
+        color: "red",
+        icon: <IconExclamationCircle size={20} />,
+      });
+    } finally {
+      toggleIsLoading();
     }
   };
 
   const handleVerify = async () => {
     try {
+      toggleIsLoading();
       const txResponse = await verifyAuction(
         auction.id,
         itemReceived,
@@ -71,12 +88,21 @@ export default function EvaluateAuctionModel({ opened, setOpened, auction }) {
       showNotification({
         autoClose: 5000,
         title: "Success!!",
-        message: "Auction created successfully",
+        message: "Auction verified successfully",
         color: "teal",
         icon: <IconCheck size={20} />,
       });
     } catch (e) {
-      console.log(e);
+      const revertMessage = getRevertMessage(e);
+      showNotification({
+        autoClose: 5000,
+        title: "Error!!",
+        message: revertMessage,
+        color: "red",
+        icon: <IconExclamationCircle size={20} />,
+      });
+    } finally {
+      toggleIsLoading();
     }
   };
 
