@@ -206,16 +206,19 @@ contract BlindAuctionFactory {
     ) external payable {
         if (msg.value < STAKE) revert("Stake is not sufficient");
         if (msg.value > STAKE) revert("Stake is too high");
-        if (bytes(_title).length == 0) revert("Title cannot be empty");
+        if (bytes(_title).length < 5 || bytes(_title).length > 20)
+            revert("Title must be between 5 to 20 characters");
         if (
             _startTime <= block.timestamp + MINIMUM_VERIFICATION_DURATION ||
             _endTime < _startTime + MINIMUM_AUCTION_DURATION
         ) revert("Invalid Auction Period");
-        if (bytes(_cid).length == 0) revert("CID cannot be empty");
-        if (bytes(_description).length == 0)
-            revert("Description cannot be empty");
-        if (bytes(_shippingAddress).length == 0)
-            revert("Shipping address cannot be empty");
+        if (bytes(_cid).length != 80) revert("Invalid CID");
+        if (bytes(_description).length < 10 || bytes(_description).length > 100)
+            revert("Description must be between 10 to 100 characters");
+        if (
+            bytes(_shippingAddress).length < 10 ||
+            bytes(_shippingAddress).length > 100
+        ) revert("Shipping must be between 10 to 100 characters");
 
         BlindAuction storage blindAuction = blindAuctions[numberOfCampaings];
         blindAuction.title = _title;
@@ -225,6 +228,7 @@ contract BlindAuctionFactory {
         blindAuction.minimumBid = _minimumBid;
         blindAuction.cid = _cid;
         blindAuction.description = _description;
+        blindAuction.seller = msg.sender;
         blindAuction.auctionState = AuctionState.UNVERIFIED;
         blindAuction.itemState = ItemState.NOTRECEIVED;
         blindAuction.id = keccak256(
@@ -253,6 +257,8 @@ contract BlindAuctionFactory {
         onlyBeforeStartTime(_auctionId)
     {
         if (!itemReceived) revert("Only received auction item can be verified");
+        if (bytes(_evaluationMessage).length == 0)
+            revert("Empty evaluation message");
         BlindAuction storage blindAuction = getBlindAuction(_auctionId);
         blindAuction.auctionState = AuctionState.OPEN;
         blindAuction.evaluatedBy = msg.sender;
@@ -272,6 +278,8 @@ contract BlindAuctionFactory {
         bool itemReceived,
         string memory _evaluationMessage
     ) external onlyAdmin pendingVerification(_auctionId) {
+        if (bytes(_evaluationMessage).length == 0)
+            revert("Empty evaluation message");
         BlindAuction storage blindAuction = getBlindAuction(_auctionId);
         blindAuction.auctionState = AuctionState.REJECTED;
         blindAuction.evaluatedBy = msg.sender;
@@ -464,6 +472,12 @@ contract BlindAuctionFactory {
             allBlindAuctions[i] = blindAuction;
         }
         return allBlindAuctions;
+    }
+
+    function getBlindAuctionById(
+        bytes32 _auctionId
+    ) external view returns (BlindAuction memory) {
+        return getBlindAuction(_auctionId);
     }
 
     function getBlindAuction(
