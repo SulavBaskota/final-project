@@ -2,12 +2,13 @@ import { useState } from "react";
 import { ethers } from "ethers";
 import { Button, Modal, Stack, Box, TextInput } from "@mantine/core";
 import { useStateContext } from "@component/context";
-import { showNotification } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons";
+import {
+  showSuccessNotification,
+  showErrorNotification,
+} from "@component/utils";
 
 export default function RegisterAdmin({ opened, setOpened, fetchAdmins }) {
   const [newAddress, setNewAddress] = useState("");
-  const [error, setError] = useState("");
   const { toggleIsLoading, registerAdmin, getRevertMessage } =
     useStateContext();
 
@@ -17,30 +18,21 @@ export default function RegisterAdmin({ opened, setOpened, fetchAdmins }) {
         toggleIsLoading(true);
         const txResponse = await registerAdmin(newAddress);
         await txResponse.wait();
-        setNewAddress("");
-        setOpened(false);
-        setError("");
-        showNotification({
-          autoClose: 5000,
-          title: "Success!!",
-          message: "Admin address registered",
-          color: "teal",
-          icon: <IconCheck size={20} />,
-        });
+        handleClose();
+        showSuccessNotification("Admin address registered");
         await fetchAdmins();
       } catch (e) {
         const revertMessage = getRevertMessage(e);
-        setError(revertMessage);
+        showErrorNotification(revertMessage);
       } finally {
         toggleIsLoading(false);
       }
     } else {
-      setError("Invalid Address");
+      showErrorNotification("Invalid Address");
     }
   };
 
   const handleClose = () => {
-    setError("");
     setNewAddress("");
     setOpened(false);
   };
@@ -53,7 +45,6 @@ export default function RegisterAdmin({ opened, setOpened, fetchAdmins }) {
           label="Address"
           value={newAddress}
           onChange={(e) => setNewAddress(e.target.value)}
-          error={error}
           data-autofocus
           autoComplete="off"
         />

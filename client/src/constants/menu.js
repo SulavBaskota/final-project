@@ -25,7 +25,7 @@ export const USER_MENU = [
   {
     label: "Bookmarks",
     icon: <IconBookmarks size={iconSize} />,
-    href: "/bookmarks",
+    href: "/auction/bookmarks",
     color: "grape",
   },
 ];

@@ -1,6 +1,6 @@
 import { FileInput } from "@mantine/core";
 
-export default function CreateAuctionImageUpload({ images, setImages, error }) {
+export default function CreateAuctionImageUpload({ images, setImages }) {
   return (
     <FileInput
       label="Item Images"
@@ -10,7 +10,6 @@ export default function CreateAuctionImageUpload({ images, setImages, error }) {
       withAsterisk
       value={images}
       onChange={setImages}
-      error={error?.images ? error.images : ""}
       autoComplete="off"
       mt="md"
     />

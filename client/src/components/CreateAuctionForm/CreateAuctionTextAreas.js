@@ -5,7 +5,6 @@ export default function CreateAuctionTextAreas({
   setDescription,
   returnAddress,
   setReturnAddress,
-  error,
 }) {
   return (
     <>
@@ -16,7 +15,6 @@ export default function CreateAuctionTextAreas({
         maxRows={2}
         value={descrption}
         onChange={(e) => setDescription(e.currentTarget.value)}
-        error={error?.descrption ? error.descrption : ""}
         withAsterisk
         autoComplete="off"
         mt="md"
@@ -28,7 +26,6 @@ export default function CreateAuctionTextAreas({
         maxRows={2}
         value={returnAddress}
         onChange={(e) => setReturnAddress(e.currentTarget.value)}
-        error={error?.returnAddress ? error.returnAddress : ""}
         withAsterisk
         autoComplete="off"
         mt="md"

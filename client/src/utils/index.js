@@ -1,3 +1,6 @@
+import { showNotification } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons";
+
 export const calculateDateInUnix = (date, time) => {
   const newDate = new Date(
     date.getFullYear(),
@@ -40,4 +43,24 @@ export const validateInputs = (
     setError({});
     return true;
   }
+};
+
+export const showSuccessNotification = (message) => {
+  return showNotification({
+    autoClose: 5000,
+    title: "Success!!",
+    message: message,
+    color: "teal",
+    icon: <IconCheck size={20} />,
+  });
+};
+
+export const showErrorNotification = (message) => {
+  return showNotification({
+    autoClose: 5000,
+    title: "Error!!",
+    message: message,
+    color: "red",
+    icon: <IconX size={20} />,
+  });
 };

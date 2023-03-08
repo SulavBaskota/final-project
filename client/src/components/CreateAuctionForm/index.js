@@ -1,17 +1,27 @@
 import { useState } from "react";
 import { Button, Box, Modal, Text } from "@mantine/core";
-import { calculateDateInUnix, validateInputs } from "@component/utils";
+import { calculateDateInUnix } from "@component/utils";
 import { useStateContext } from "@component/context";
-import { showNotification } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons";
+import {
+  showSuccessNotification,
+  showErrorNotification,
+} from "@component/utils";
 import CreateAuctionTextInputs from "./CreateAuctionTextInputs";
 import CreateAuctionTextAreas from "./CreateAuctionTextAreas";
 import CreateAuctionImageUpload from "./CreateAuctionImageUpload";
 import DateTimePicker from "./DateTimePicker";
 
+// Need to remove later on
+const cid = [
+  "https://gateway.ipfscdn.io/ipfs/QmSdn7fERhNW76YTZcCHjpcj7KgBSmvEqULkVSeLmxTNkT/0",
+  "https://gateway.ipfscdn.io/ipfs/Qma6zxbbYD1nFpJuZEQA9Xbi7bUyw5ktZb8weCvAxrYTFE/0",
+  "https://gateway.ipfscdn.io/ipfs/QmbtETQy24fNBQnpASTptHibmh1go6KBBtpyztnf1C5krG/0",
+  "https://gateway.ipfscdn.io/ipfs/QmcStaafWvd5zZs1qtjsa2xvJ8Eq43QNiFEe5JRM32VDtM/0",
+];
+
 export default function CreateAuctionForm({ opened, setOpened }) {
   const [title, setTitle] = useState("");
-  const [minimumBid, setMinimumBid] = useState(0);
+  const [minimumBid, setMinimumBid] = useState("0");
   const [startDate, setStartDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -19,13 +29,13 @@ export default function CreateAuctionForm({ opened, setOpened }) {
   const [images, setImages] = useState([]);
   const [descrption, setDescription] = useState("");
   const [returnAddress, setReturnAddress] = useState("");
-  const [error, setError] = useState({});
 
-  const { createAuction, uploadToIpfs, toggleIsLoading } = useStateContext();
+  const { createAuction, uploadToIpfs, toggleIsLoading, getRevertMessage } =
+    useStateContext();
 
   const resetStates = () => {
     setTitle("");
-    setMinimumBid(0);
+    setMinimumBid("0");
     setStartDate(new Date());
     setStartTime(new Date());
     setEndDate(new Date());
@@ -33,7 +43,6 @@ export default function CreateAuctionForm({ opened, setOpened }) {
     setImages([]);
     setDescription("");
     setReturnAddress("");
-    setError({});
   };
 
   const handleClose = () => {
@@ -42,8 +51,6 @@ export default function CreateAuctionForm({ opened, setOpened }) {
   };
 
   const handleSubmit = async () => {
-    // if (!validateInputs(title, images, descrption, returnAddress, setError))
-    //   return;
     try {
       toggleIsLoading();
       const auctionStartTime = calculateDateInUnix(startDate, startTime);
@@ -54,22 +61,18 @@ export default function CreateAuctionForm({ opened, setOpened }) {
         _startTime: auctionStartTime,
         _endTime: auctionEndTime,
         _minimumBid: minimumBid,
-        _cid: "https://gateway.ipfscdn.io/ipfs/QmSdn7fERhNW76YTZcCHjpcj7KgBSmvEqULkVSeLmxTNkT/0",
+        // _cid: cid,
+        _cid: cid[0],
         _description: descrption,
         _shippingAddress: returnAddress,
       };
       const txResponse = await createAuction(params);
       await txResponse.wait();
       handleClose();
-      showNotification({
-        autoClose: 5000,
-        title: "Success!!",
-        message: "Auction created successfully",
-        color: "teal",
-        icon: <IconCheck size={20} />,
-      });
+      showSuccessNotification("Auction created successfully");
     } catch (e) {
-      console.log(e);
+      const revertMessage = getRevertMessage(e);
+      showErrorNotification(revertMessage);
     } finally {
       toggleIsLoading();
     }
@@ -82,7 +85,6 @@ export default function CreateAuctionForm({ opened, setOpened }) {
         setTitle={setTitle}
         minimumBid={minimumBid}
         setMinimumBid={setMinimumBid}
-        error={error}
       />
       <DateTimePicker
         startDate={startDate}
@@ -94,11 +96,7 @@ export default function CreateAuctionForm({ opened, setOpened }) {
         endTime={endTime}
         setEndTime={setEndTime}
       />
-      <CreateAuctionImageUpload
-        images={images}
-        setImages={setImages}
-        error={error}
-      />
+      <CreateAuctionImageUpload images={images} setImages={setImages} />
       {images.length > 0 ? (
         <Text fz="sm">{images.length} file(s) chosen</Text>
       ) : null}
@@ -107,7 +105,6 @@ export default function CreateAuctionForm({ opened, setOpened }) {
         setDescription={setDescription}
         returnAddress={returnAddress}
         setReturnAddress={setReturnAddress}
-        error={error}
       />
       <Box mt="md" sx={{ display: "flex", justifyContent: "flex-end" }}>
         <Button onClick={handleSubmit}>Submit</Button>

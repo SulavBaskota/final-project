@@ -5,7 +5,6 @@ export default function CreateAuctionTextInputs({
   setTitle,
   minimumBid,
   setMinimumBid,
-  error,
 }) {
   return (
     <>
@@ -16,7 +15,6 @@ export default function CreateAuctionTextInputs({
         onChange={(e) => setTitle(e.currentTarget.value)}
         autoComplete="off"
         withAsterisk
-        error={error?.title ? error.title : ""}
       />
       <TextInput
         label="Minimum Bid"

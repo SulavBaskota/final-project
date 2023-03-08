@@ -57,14 +57,14 @@ export const StateContextProvider = ({ children }) => {
 
   const isAdmin = async () => {
     const signedAdminContract = adminContract.connect(signer);
-    const txResonse = await signedAdminContract.isAdmin(address);
-    return txResonse;
+    const txResponse = await signedAdminContract.isAdmin(address);
+    return txResponse;
   };
 
   const isSuperAdmin = async () => {
     const signedAdminContract = adminContract.connect(signer);
-    const txResonse = await signedAdminContract.isSuperAdmin();
-    return txResonse;
+    const txResponse = await signedAdminContract.isSuperAdmin();
+    return txResponse;
   };
 
   const getAdmins = async () => {
@@ -189,6 +189,16 @@ export const StateContextProvider = ({ children }) => {
     return parsedBlindAuction;
   };
 
+  const getUserAuctions = async () => {
+    const allBlindAuctions = await getBlindAuctions();
+    const filteredBlindAuctions = allBlindAuctions.filter(
+      (blindAuction) =>
+        blindAuction.seller === address ||
+        blindAuction.bidders.includes(address)
+    );
+    return filteredBlindAuctions;
+  };
+
   const getOpenAuctions = async () => {
     const allBlindAuctions = await getBlindAuctions();
     const filteredBlindAuctions = allBlindAuctions.filter(
@@ -204,12 +214,12 @@ export const StateContextProvider = ({ children }) => {
   ) => {
     const signedBAFContract = BAFContract.connect(signer);
 
-    const txResonse = await signedBAFContract.verifyAuction(
+    const txResponse = await signedBAFContract.verifyAuction(
       _auctionId,
       _itemReceived,
       _evaluationMessage
     );
-    return txResonse;
+    return txResponse;
   };
 
   const rejectAuction = async (
@@ -219,12 +229,12 @@ export const StateContextProvider = ({ children }) => {
   ) => {
     const signedBAFContract = BAFContract.connect(signer);
 
-    const txResonse = await signedBAFContract.rejectAuction(
+    const txResponse = await signedBAFContract.rejectAuction(
       _auctionId,
       _itemReceived,
       _evaluationMessage
     );
-    return txResonse;
+    return txResponse;
   };
 
   const placeBid = async (_auctionId, _deposit, _trueBid, _secret) => {
@@ -267,12 +277,28 @@ export const StateContextProvider = ({ children }) => {
     return txResponse;
   };
 
+  const cancelAuction = async (_auctionId) => {
+    const signedBAFContract = BAFContract.connect(signer);
+    const txResponse = await signedBAFContract.cancelAuction(_auctionId);
+    return txResponse;
+  };
+
+  const updateShippingInfo = async (_auctionId, _shippingAddress) => {
+    const signedBAFContract = BAFContract.connect(signer);
+    const txResponse = await signedBAFContract.updateShippingAddress(
+      _auctionId,
+      _shippingAddress
+    );
+    return txResponse;
+  };
+
   return (
     <StateContext.Provider
       value={{
         address,
         adminContract,
         BAFContract,
+        cancelAuction,
         closeAuction,
         connectWallet,
         createAuction,
@@ -284,6 +310,7 @@ export const StateContextProvider = ({ children }) => {
         getOpenAuctions,
         getRevertMessage,
         getUnverifiedAuctions,
+        getUserAuctions,
         isMismatched,
         isLoading,
         placeBid,
@@ -294,6 +321,7 @@ export const StateContextProvider = ({ children }) => {
         signer,
         toggleIsLoading,
         updateRole,
+        updateShippingInfo,
         uploadToIpfs,
         verifyAuction,
         withdraw,

@@ -13,8 +13,10 @@ import { Carousel } from "@mantine/carousel";
 import { useStateContext } from "@component/context";
 import { useEffect, useState } from "react";
 import AuctionTimingDetails from "./AuctionTimingDetails";
-import { showNotification } from "@mantine/notifications";
-import { IconCheck, IconExclamationCircle } from "@tabler/icons";
+import {
+  showSuccessNotification,
+  showErrorNotification,
+} from "@component/utils";
 
 export default function EvaluateAuctionModel({ opened, setOpened, auction }) {
   const [images, setImages] = useState([]);
@@ -54,22 +56,10 @@ export default function EvaluateAuctionModel({ opened, setOpened, auction }) {
       );
       await txResponse.wait();
       handleClose();
-      showNotification({
-        autoClose: 5000,
-        title: "Success!!",
-        message: "Auction rejected successfully",
-        color: "teal",
-        icon: <IconCheck size={20} />,
-      });
+      showSuccessNotification("Auction rejected successfully");
     } catch (e) {
       const revertMessage = getRevertMessage(e);
-      showNotification({
-        autoClose: 5000,
-        title: "Error!!",
-        message: revertMessage,
-        color: "red",
-        icon: <IconExclamationCircle size={20} />,
-      });
+      showErrorNotification(revertMessage);
     } finally {
       toggleIsLoading();
     }
@@ -85,22 +75,10 @@ export default function EvaluateAuctionModel({ opened, setOpened, auction }) {
       );
       await txResponse.wait();
       handleClose();
-      showNotification({
-        autoClose: 5000,
-        title: "Success!!",
-        message: "Auction verified successfully",
-        color: "teal",
-        icon: <IconCheck size={20} />,
-      });
+      showSuccessNotification("Auction verified successfully");
     } catch (e) {
       const revertMessage = getRevertMessage(e);
-      showNotification({
-        autoClose: 5000,
-        title: "Error!!",
-        message: revertMessage,
-        color: "red",
-        icon: <IconExclamationCircle size={20} />,
-      });
+      showErrorNotification(revertMessage);
     } finally {
       toggleIsLoading();
     }

@@ -1,21 +1,21 @@
-import { LoadingOverlay, Container, Grid, Button } from "@mantine/core";
-import { useTimeout } from "@mantine/hooks";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useStateContext } from "@component/context";
+import { useTimeout } from "@mantine/hooks";
+import { Container, LoadingOverlay, Grid } from "@mantine/core";
 import WalletNotConnected from "@component/components/WalletNotConnected";
-import NoOpenAuctions from "@component/components/NoOpenAuctions";
-import AuctionMediaCard from "@component/components/AuctionMediaCard";
+import NoUserAuctions from "@component/components/NoUserAuctions";
 import LearnMoreCardButton from "@component/components/LearnMoreCardButton";
+import AuctionMediaCard from "@component/components/AuctionMediaCard";
 
-export default function Home() {
-  const { address, getOpenAuctions } = useStateContext();
+export default function Bookmarks() {
+  const { address, getUserAuctions } = useStateContext();
   const [visible, setVisible] = useState(true);
+  const [userAuctions, setUserAuctions] = useState([]);
   const { start, clear } = useTimeout(() => setVisible(false), 500);
-  const [openAuctions, setOpenAuctions] = useState([]);
 
-  const fetchOpenAuctions = async () => {
-    const data = await getOpenAuctions();
-    setOpenAuctions(data);
+  const fetchUserAuctions = async () => {
+    const data = await getUserAuctions();
+    setUserAuctions(data);
   };
 
   useEffect(() => {
@@ -24,17 +24,17 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (address) fetchOpenAuctions();
+    if (address) fetchUserAuctions();
   }, [address]);
 
   return (
     <>
       {visible && <LoadingOverlay visible={visible} overlayBlur={2} />}
       {address ? (
-        openAuctions.length > 0 ? (
+        userAuctions.length > 0 ? (
           <Container>
             <Grid justify="center" align="center">
-              {openAuctions.map((auction, index) => (
+              {userAuctions.map((auction, index) => (
                 <Grid.Col xs={12} md={6} lg={4} key={index}>
                   <AuctionMediaCard
                     auction={auction}
@@ -45,7 +45,7 @@ export default function Home() {
             </Grid>
           </Container>
         ) : (
-          <NoOpenAuctions />
+          <NoUserAuctions />
         )
       ) : (
         <WalletNotConnected />

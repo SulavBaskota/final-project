@@ -1,18 +1,20 @@
-import { Button, Text } from "@mantine/core";
+import { Text, Button } from "@mantine/core";
 import { useStateContext } from "@component/context";
 import {
   showSuccessNotification,
   showErrorNotification,
 } from "@component/utils";
 
-export default function CloseAuction({ auctionId }) {
-  const { closeAuction, toggleIsLoading, getRevertMessage } = useStateContext();
+export default function CancelAuction({ auctionId }) {
+  const { cancelAuction, toggleIsLoading, getRevertMessage } =
+    useStateContext();
+
   const handleClick = async () => {
     try {
       toggleIsLoading();
-      const txResponse = await closeAuction(auctionId);
+      const txResponse = await cancelAuction(auctionId);
       txResponse.wait();
-      showSuccessNotification("Auction successfully closed");
+      showSuccessNotification("Auction successfully cancelled");
     } catch (e) {
       const revertMessage = getRevertMessage(e);
       showErrorNotification(revertMessage);
@@ -20,13 +22,14 @@ export default function CloseAuction({ auctionId }) {
       toggleIsLoading();
     }
   };
+
   return (
     <>
       <Text fz={30} fw={700} align="center">
-        Close Auction
+        Cancel Auction
       </Text>
-      <Button onClick={handleClick} color="pink">
-        Close
+      <Button color="pink" onClick={handleClick}>
+        Cancel Auction
       </Button>
     </>
   );

@@ -1,20 +1,31 @@
 import { TextInput, Button, Text, Divider } from "@mantine/core";
 import { useState } from "react";
 import { useStateContext } from "@component/context";
+import {
+  showSuccessNotification,
+  showErrorNotification,
+} from "@component/utils";
 
 export default function RevealBid({ auctionId }) {
   const [trueBid, setTrueBid] = useState(0);
   const [secret, setSecret] = useState("");
-  const { revealBid, toggleIsLoading } = useStateContext();
+  const { revealBid, toggleIsLoading, getRevertMessage } = useStateContext();
+
+  const resetStates = () => {
+    setTrueBid(0);
+    setSecret("");
+  };
 
   const handleClick = async () => {
     try {
       toggleIsLoading();
       const txResponse = await revealBid(auctionId, trueBid, secret);
       txResponse.wait();
-      console.log(txResponse);
+      resetStates();
+      showSuccessNotification("Bid successfully revealed");
     } catch (e) {
-      console.log(e);
+      const revertMessage = getRevertMessage(e);
+      showErrorNotification(revertMessage);
     } finally {
       toggleIsLoading();
     }

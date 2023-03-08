@@ -15,11 +15,8 @@ import { Carousel } from "@mantine/carousel";
 import { useTimeout } from "@mantine/hooks";
 import AuctionBadge from "@component/components/AuctionBadge";
 import AuctionDetails from "@component/components/AuctionDetails";
-import PlaceBid from "@component/components/PlaceBid";
-import RevealBid from "@component/components/RevealBid";
-import Withdraw from "@component/components/Withdraw";
-import CloseAuction from "@component/components/CloseAuction";
 import Timers from "@component/components/Timers";
+import AuctionInterface from "@component/components/AuctionInterface";
 
 export default function Auction() {
   const router = useRouter();
@@ -71,6 +68,7 @@ export default function Auction() {
                     <AuctionBadge auctionState={auction.auctionState} />
                     <Divider size="md" />
                     <Timers
+                      auctionState={auction.auctionState}
                       startTime={auction.startTime}
                       endTime={auction.endTime}
                       revealTime={auction.revealTime}
@@ -92,25 +90,12 @@ export default function Auction() {
                     <AuctionDetails auction={auction} />
                   </Paper>
                 </Grid.Col>
-                <Grid.Col xs={12} md={4}>
-                  <Paper shadow="sm" p="md" radius="md" withBorder>
-                    <Stack align="stretch">
-                      {startTimePassed && !endTimePassed && (
-                        <PlaceBid auctionId={auction.id} />
-                      )}
-                      {endTimePassed && !revealTimePassed && (
-                        <RevealBid auctionId={auction.id} />
-                      )}
-                      {revealTimePassed && (
-                        <>
-                          <Withdraw auctionId={auction.id} />
-                          <Divider size="lg" />
-                          <CloseAuction auctionId={auction.id} />
-                        </>
-                      )}
-                    </Stack>
-                  </Paper>
-                </Grid.Col>
+                <AuctionInterface
+                  auction={auction}
+                  startTimePassed={startTimePassed}
+                  endTimePassed={endTimePassed}
+                  revealTimePassed={revealTimePassed}
+                />
               </Grid>
             </Grid.Col>
             <Grid.Col>

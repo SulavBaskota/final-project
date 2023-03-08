@@ -1,7 +1,9 @@
 import { Divider } from "@mantine/core";
 import CountDownTimer from "./CountDownTimer";
+import { AUCTIONSTATE } from "@component/constants";
 
 export default function Timers({
+  auctionState,
   startTime,
   endTime,
   revealTime,
@@ -19,7 +21,7 @@ export default function Timers({
         title="start"
         timePassed={startTimePassed}
         setTimePassed={setStartTimePassed}
-        displayTimer={!startTimePassed}
+        displayTimer={!startTimePassed && auctionState === AUCTIONSTATE.OPEN}
       />
       <Divider size="md" />
       <CountDownTimer
@@ -27,7 +29,7 @@ export default function Timers({
         title="end"
         timePassed={endTimePassed}
         setTimePassed={setEndTimePassed}
-        displayTimer={startTimePassed}
+        displayTimer={startTimePassed && auctionState === AUCTIONSTATE.OPEN}
       />
       <Divider size="md" />
       <CountDownTimer
@@ -35,7 +37,7 @@ export default function Timers({
         title="reveal"
         timePassed={revealTimePassed}
         setTimePassed={setRevealTimePassed}
-        displayTimer={endTimePassed}
+        displayTimer={endTimePassed && auctionState === AUCTIONSTATE.OPEN}
       />
     </>
   );

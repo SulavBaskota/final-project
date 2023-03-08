@@ -12,6 +12,12 @@ const AUCTIONSTATE = {
   FAILED: 4,
 };
 
+const ITEMSTATE = {
+  NOTRECEIVED: 0,
+  RECEIVED: 1,
+  SHIPPED: 2,
+};
+
 module.exports = {
   adminAbi,
   adminContractAddress,
@@ -19,4 +25,5 @@ module.exports = {
   blindAuctionFactoryContractAddress,
   blindAuctionAbi,
   AUCTIONSTATE,
+  ITEMSTATE,
 };
