@@ -1,7 +1,8 @@
-import { Card, Image, Text, Stack, Group, Box } from "@mantine/core";
+import { Card, Image, Text, Group, Box } from "@mantine/core";
 import { useStateContext } from "@component/context";
 import { useEffect, useState } from "react";
 import AuctionTimingDetails from "./AuctionTimingDetails";
+import AuctionBadge from "./AuctionBadge";
 
 export default function AuctionMediaCard({ auction, cardButton }) {
   const { downloadFromIpfs } = useStateContext();
@@ -30,15 +31,16 @@ export default function AuctionMediaCard({ auction, cardButton }) {
             <Image src={images[0]} height={200} alt="Item Image" />
           </Card.Section>
 
-          <Text weight={500} mt="md" mb="xs">
-            {auction.title}
-          </Text>
+          <Group position="apart" mt="md" mb="xs">
+            <Text weight={500}>{auction.title}</Text>
+            <AuctionBadge auctionState={auction.auctionState} size="sm" />
+          </Group>
 
           <AuctionTimingDetails
             startTime={auction.startTime}
             endTime={auction.endTime}
           />
-          
+
           <Box sx={{ height: 100 }}>
             <Text size="sm" color="dimmed" mt="md" lineClamp={4}>
               {auction.description}

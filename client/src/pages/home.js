@@ -1,4 +1,4 @@
-import { LoadingOverlay, Container, Grid, Button } from "@mantine/core";
+import { LoadingOverlay, Container, Grid } from "@mantine/core";
 import { useTimeout } from "@mantine/hooks";
 import { useState, useEffect } from "react";
 import { useStateContext } from "@component/context";
@@ -8,7 +8,7 @@ import AuctionMediaCard from "@component/components/AuctionMediaCard";
 import LearnMoreCardButton from "@component/components/LearnMoreCardButton";
 
 export default function Home() {
-  const { address, getOpenAuctions } = useStateContext();
+  const { address, signer, getOpenAuctions, BAFContract } = useStateContext();
   const [visible, setVisible] = useState(true);
   const { start, clear } = useTimeout(() => setVisible(false), 500);
   const [openAuctions, setOpenAuctions] = useState([]);
@@ -24,8 +24,27 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (address) fetchOpenAuctions();
-  }, [address]);
+    if (address) {
+      fetchOpenAuctions();
+      const signedBAFContract = BAFContract.connect(signer);
+      signedBAFContract.on("AuctionVerified", () => {
+        fetchOpenAuctions();
+      });
+      signedBAFContract.on("AuctionSuccessful", () => {
+        fetchOpenAuctions();
+      });
+      signedBAFContract.on("AuctionFailed", () => {
+        fetchOpenAuctions();
+      });
+    }
+
+    return () =>
+      BAFContract.removeAllListeners([
+        "AuctionVerified",
+        "AuctionSuccessful",
+        "AuctionFailed",
+      ]);
+  }, [address, signer]);
 
   return (
     <>

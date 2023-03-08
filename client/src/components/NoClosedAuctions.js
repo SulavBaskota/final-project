@@ -1,16 +1,16 @@
 import { Container, Text, Stack, Button, Grid, Center } from "@mantine/core";
 import Image from "next/image";
-import oopsPic from "/public/oops.png";
+import sorryPic from "/public/sorry.png";
 import Link from "next/link";
 
-export default function NoUserAuctions() {
+export default function NoClosedAuctions() {
   return (
     <Container>
       <Grid justify="center" align="center">
         <Grid.Col xs={12} md={6}>
           <Center>
             <Image
-              src={oopsPic}
+              src={sorryPic}
               height={400}
               width={400}
               alt="sorry-pic"
@@ -21,13 +21,13 @@ export default function NoUserAuctions() {
         <Grid.Col xs={12} md={6}>
           <Stack align="center">
             <Text fw={800} fz={30} color="pink">
-              Oops!!
+              Sorry!!
             </Text>
             <Text fz="lg" fw={500}>
-              It seems that you don't
+              It seems there are currently
             </Text>
             <Text fz="lg" fw={500}>
-              have any bookmarks yet.
+              no closed auctions on the platform.
             </Text>
             <Button
               variant="gradient"

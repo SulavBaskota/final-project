@@ -2,7 +2,6 @@ const adminAbi = require("./Admin/abi.json");
 const adminContractAddress = require("./Admin/address.json");
 const blindAuctionFactoryAbi = require("./BlindAuctionFactory/abi.json");
 const blindAuctionFactoryContractAddress = require("./BlindAuctionFactory/address.json");
-const blindAuctionAbi = require("./BlindAuction/abi.json");
 
 const AUCTIONSTATE = {
   UNVERIFIED: 0,
@@ -23,7 +22,6 @@ module.exports = {
   adminContractAddress,
   blindAuctionFactoryAbi,
   blindAuctionFactoryContractAddress,
-  blindAuctionAbi,
   AUCTIONSTATE,
   ITEMSTATE,
 };

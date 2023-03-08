@@ -8,7 +8,7 @@ import LearnMoreCardButton from "@component/components/LearnMoreCardButton";
 import AuctionMediaCard from "@component/components/AuctionMediaCard";
 
 export default function Bookmarks() {
-  const { address, getUserAuctions } = useStateContext();
+  const { address, getUserAuctions, BAFContract, signer } = useStateContext();
   const [visible, setVisible] = useState(true);
   const [userAuctions, setUserAuctions] = useState([]);
   const { start, clear } = useTimeout(() => setVisible(false), 500);
@@ -24,8 +24,43 @@ export default function Bookmarks() {
   }, []);
 
   useEffect(() => {
-    if (address) fetchUserAuctions();
-  }, [address]);
+    if (address) {
+      fetchUserAuctions();
+      const signedBAFContract = BAFContract.connect(signer);
+      signedBAFContract.on("AuctionCancelled", (_auctionId) => {
+        if (userAuctions.includes(_auctionId)) fetchUserAuctions();
+      });
+      signedBAFContract.on(
+        "AuctionVerified",
+        (_auctionId, _evaluatedBy, _evaluationMessage) => {
+          if (userAuctions.includes(_auctionId)) fetchUserAuctions();
+        }
+      );
+      signedBAFContract.on(
+        "AuctionRejected",
+        (_auctionId, _evaluatedBy, _evaluationMessage) => {
+          if (userAuctions.includes(_auctionId)) fetchUserAuctions();
+        }
+      );
+      signedBAFContract.on(
+        "AuctionSuccessful",
+        (_auctionId, _highestBidder, _highestBid) => {
+          if (userAuctions.includes(_auctionId)) fetchUserAuctions();
+        }
+      );
+      signedBAFContract.on("AuctionFailed", (_auctionId) => {
+        if (userAuctions.includes(_auctionId)) fetchUserAuctions();
+      });
+    }
+    return () =>
+      BAFContract.removeAllListeners([
+        "AuctionCancelled",
+        "AuctionVerified",
+        "AuctionRejected",
+        "AuctionSuccessful",
+        "AuctionFailed",
+      ]);
+  }, [address, signer]);
 
   return (
     <>

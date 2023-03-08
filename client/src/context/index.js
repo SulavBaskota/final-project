@@ -6,6 +6,7 @@ import {
   blindAuctionFactoryAbi,
   blindAuctionFactoryContractAddress,
   AUCTIONSTATE,
+  ITEMSTATE,
 } from "@component/constants";
 import {
   useAddress,
@@ -150,9 +151,10 @@ export const StateContextProvider = ({ children }) => {
       highestBid: blindAuction.highestBid,
       evaluationMessage: blindAuction.evaluationMessage,
       evaluatedBy: blindAuction.evaluatedBy,
+      shippingAddressUpdated: blindAuction.shippingAddressUpdated,
     }));
-
-    return parsedBlindAuctions;
+    const reversedParsedBlindAuctions = parsedBlindAuctions.reverse();
+    return reversedParsedBlindAuctions;
   };
 
   const getUnverifiedAuctions = async () => {
@@ -185,6 +187,7 @@ export const StateContextProvider = ({ children }) => {
       highestBid: ethers.utils.formatEther(blindAuction.highestBid),
       evaluationMessage: blindAuction.evaluationMessage,
       evaluatedBy: blindAuction.evaluatedBy,
+      shippingAddressUpdated: blindAuction.shippingAddressUpdated,
     };
     return parsedBlindAuction;
   };
@@ -205,6 +208,44 @@ export const StateContextProvider = ({ children }) => {
       (blindAuction) => blindAuction.auctionState === AUCTIONSTATE.OPEN
     );
     return filteredBlindAuctions;
+  };
+
+  const getClosedAuctions = async () => {
+    const allBlindAuctions = await getBlindAuctions();
+    const filteredBlindAuctions = allBlindAuctions.filter(
+      (blindAuction) =>
+        blindAuction.auctionState === AUCTIONSTATE.REJECTED ||
+        blindAuction.auctionState === AUCTIONSTATE.FAILED ||
+        blindAuction.auctionState === AUCTIONSTATE.SUCCESSFUL
+    );
+    return filteredBlindAuctions;
+  };
+
+  const getUnshippedItems = async () => {
+    const allBlindAuctions = await getBlindAuctions();
+    const filteredBlindAuctions = allBlindAuctions.filter(
+      (blindAuction) =>
+        (blindAuction.auctionState === AUCTIONSTATE.REJECTED &&
+          blindAuction.itemState === ITEMSTATE.RECEIVED) ||
+        (blindAuction.auctionState === AUCTIONSTATE.FAILED &&
+          blindAuction.itemState === ITEMSTATE.RECEIVED) ||
+        (blindAuction.auctionState === AUCTIONSTATE.SUCCESSFUL &&
+          blindAuction.itemState === ITEMSTATE.RECEIVED &&
+          blindAuction.shippingAddressUpdated)
+    );
+    return filteredBlindAuctions;
+  };
+
+  const getShippingAddress = async (_auctionId) => {
+    const signedBAFContract = BAFContract.connect(signer);
+    const txResponse = await signedBAFContract.getShippingAddress(_auctionId);
+    return txResponse;
+  };
+
+  const updateShipmentStatus = async (_auctionId) => {
+    const signedBAFContract = BAFContract.connect(signer);
+    const txResponse = await signedBAFContract.updateShipmentStatus(_auctionId);
+    return txResponse;
   };
 
   const verifyAuction = async (
@@ -307,10 +348,13 @@ export const StateContextProvider = ({ children }) => {
         downloadFromIpfs,
         getAdmins,
         getBlindAuctionById,
+        getClosedAuctions,
         getOpenAuctions,
         getRevertMessage,
+        getShippingAddress,
         getUnverifiedAuctions,
         getUserAuctions,
+        getUnshippedItems,
         isMismatched,
         isLoading,
         placeBid,
@@ -322,6 +366,7 @@ export const StateContextProvider = ({ children }) => {
         toggleIsLoading,
         updateRole,
         updateShippingInfo,
+        updateShipmentStatus,
         uploadToIpfs,
         verifyAuction,
         withdraw,

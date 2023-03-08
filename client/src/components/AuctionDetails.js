@@ -11,10 +11,14 @@ export default function AuctionDetails({ auction }) {
       <Text truncate>Seller: {auction.seller}</Text>
       <Text>Minimum Bid: {auction.minimumBid} ETH</Text>
       <Text>{auction.description}</Text>
-      <Text>Evaluation Message: {auction.evaluationMessage}</Text>
-      <Text truncate>Evaluated By: {auction.evaluatedBy}</Text>
-      <Text truncate>Highest Bidder: {auction.highestBidder}</Text>
-      <Text>Highest Bid: {auction.highestBid} ETH</Text>
+      {auction.evaluationMessage && (
+        <>
+          <Text>Evaluation Message: {auction.evaluationMessage}</Text>
+          <Text truncate>Evaluated By: {auction.evaluatedBy}</Text>
+          <Text truncate>Highest Bidder: {auction.highestBidder}</Text>
+          <Text>Highest Bid: {auction.highestBid} ETH</Text>
+        </>
+      )}
     </Stack>
   );
 }

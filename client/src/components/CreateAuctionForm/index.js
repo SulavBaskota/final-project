@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { Button, Box, Modal, Text } from "@mantine/core";
 import { calculateDateInUnix } from "@component/utils";
 import { useStateContext } from "@component/context";
@@ -20,6 +21,7 @@ const cid = [
 ];
 
 export default function CreateAuctionForm({ opened, setOpened }) {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [minimumBid, setMinimumBid] = useState("0");
   const [startDate, setStartDate] = useState(new Date());
@@ -70,6 +72,7 @@ export default function CreateAuctionForm({ opened, setOpened }) {
       await txResponse.wait();
       handleClose();
       showSuccessNotification("Auction created successfully");
+      router.push("/auction/bookmarks");
     } catch (e) {
       const revertMessage = getRevertMessage(e);
       showErrorNotification(revertMessage);

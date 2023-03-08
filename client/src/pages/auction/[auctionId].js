@@ -21,7 +21,13 @@ import AuctionInterface from "@component/components/AuctionInterface";
 export default function Auction() {
   const router = useRouter();
   const { auctionId } = router.query;
-  const { address, getBlindAuctionById, downloadFromIpfs } = useStateContext();
+  const {
+    address,
+    getBlindAuctionById,
+    downloadFromIpfs,
+    BAFContract,
+    signer,
+  } = useStateContext();
   const [auction, setAuction] = useState({});
   const [images, setImages] = useState([]);
   const [visible, setVisible] = useState(true);
@@ -43,8 +49,55 @@ export default function Auction() {
   }, []);
 
   useEffect(() => {
-    if (address && auctionId) fetchBlindAuction();
-  }, [address, auctionId]);
+    if (address && auctionId) {
+      fetchBlindAuction();
+      const signedBAFContract = BAFContract.connect(signer);
+      signedBAFContract.on("AuctionCancelled", (_auctionId) => {
+        if (auctionId === _auctionId) fetchBlindAuction();
+      });
+      signedBAFContract.on(
+        "AuctionVerified",
+        (_auctionId, _evaluatedBy, _evaluationMessage) => {
+          if (auctionId === _auctionId) fetchBlindAuction();
+        }
+      );
+      signedBAFContract.on(
+        "AuctionRejected",
+        (_auctionId, _evaluatedBy, _evaluationMessage) => {
+          if (auctionId === _auctionId) fetchBlindAuction();
+        }
+      );
+      signedBAFContract.on(
+        "AuctionSuccessful",
+        (_auctionId, _highestBidder, _highestBid) => {
+          if (auctionId === _auctionId) fetchBlindAuction();
+        }
+      );
+      signedBAFContract.on("AuctionFailed", (_auctionId) => {
+        if (auctionId === _auctionId) fetchBlindAuction();
+      });
+      signedBAFContract.on("BidPlaced", (_auctionId, _bidder) => {
+        if (auctionId === _auctionId) fetchBlindAuction();
+      });
+      signedBAFContract.on("BidRevealed", (_auctionId, _bidder) => {
+        if (auctionId === _auctionId) fetchBlindAuction();
+      });
+      signedBAFContract.on("ShipmentStatusUpdated", (_auctionId) => {
+        if (auctionId === _auctionId) fetchBlindAuction();
+      });
+    }
+    return () =>
+      BAFContract.removeAllListeners([
+        "AuctionCancelled",
+        "AuctionVerified",
+        "AuctionRejected",
+        "AuctionSuccessful",
+        "AuctionFailed",
+        "BidPlaced",
+        "BidRevealed",
+        "ShipmentStatusUpdated",
+      ]);
+  }, [address, auctionId, signer]);
 
   return (
     <>
@@ -97,11 +150,6 @@ export default function Auction() {
                   revealTimePassed={revealTimePassed}
                 />
               </Grid>
-            </Grid.Col>
-            <Grid.Col>
-              {auction.bidders.map((bidder, index) => (
-                <Text key={index}>{bidder}</Text>
-              ))}
             </Grid.Col>
           </Grid>
         </Container>

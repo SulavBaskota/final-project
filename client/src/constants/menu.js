@@ -5,6 +5,7 @@ import {
   IconTruckDelivery,
   IconUsers,
   IconBookmarks,
+  IconChecks,
 } from "@tabler/icons";
 
 const iconSize = 16;
@@ -27,6 +28,12 @@ export const USER_MENU = [
     icon: <IconBookmarks size={iconSize} />,
     href: "/auction/bookmarks",
     color: "grape",
+  },
+  {
+    label: "Closed Auctions",
+    icon: <IconChecks size={iconSize} />,
+    href: "/auction/closed-auctions",
+    color: "cyan",
   },
 ];
 

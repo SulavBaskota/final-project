@@ -6,13 +6,11 @@ import {
   useMantineTheme,
   UnstyledButton,
   Group,
-  Autocomplete,
 } from "@mantine/core";
 import logo from "/public/logo.png";
 import Image from "next/image";
 import Link from "next/link";
 import ColorSchemeToggle from "../ColorSchemeToogle";
-import { IconSearch } from "@tabler/icons";
 
 export default function MyHeader({ opened, setOpened }) {
   const theme = useMantineTheme();
@@ -46,14 +44,6 @@ export default function MyHeader({ opened, setOpened }) {
         </UnstyledButton>
 
         <Group spacing="xs">
-          <MediaQuery smallerThan="md" styles={{ display: "none" }}>
-            <Autocomplete
-              placeholder="Search"
-              data={[]}
-              size="xs"
-              icon={<IconSearch />}
-            />
-          </MediaQuery>
           <ColorSchemeToggle />
         </Group>
       </div>
