@@ -1,20 +1,12 @@
-const frontEndAdminAbiFile = "../client/src/constants/Admin/abi.json";
-const frontEndAdminAddressFile = "../client/src/constants/Admin/address.json";
-const frontEndBlindAuctionAbiFile =
-  "../client/src/constants/BlindAuction/abi.json";
-const frontEndBlindAuctionFactoryAbiFile =
-  "../client/src/constants/BlindAuctionFactory/abi.json";
-const frontEndBlindAuctionFactoryAddressFile =
+const fEAdminAbiFile = "../client/src/constants/Admin/abi.json";
+const fEAdminAddressFile = "../client/src/constants/Admin/address.json";
+const fEBAFAbiFile = "../client/src/constants/BlindAuctionFactory/abi.json";
+const fEBAFAddressFile =
   "../client/src/constants/BlindAuctionFactory/address.json";
 
-const BackEndBlindAuctionAbiFile =
-  "./artifacts/contracts/BlindAuction.sol/BlindAuction.json";
-
 module.exports = {
-  frontEndAdminAbiFile,
-  frontEndAdminAddressFile,
-  frontEndBlindAuctionAbiFile,
-  frontEndBlindAuctionFactoryAbiFile,
-  frontEndBlindAuctionFactoryAddressFile,
-  BackEndBlindAuctionAbiFile,
+  fEAdminAbiFile,
+  fEAdminAddressFile,
+  fEBAFAbiFile,
+  fEBAFAddressFile,
 };

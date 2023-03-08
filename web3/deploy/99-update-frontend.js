@@ -1,12 +1,10 @@
 const fs = require("fs");
 const { ethers } = require("hardhat");
 const {
-  frontEndAdminAbiFile,
-  frontEndAdminAddressFile,
-  frontEndBlindAuctionAbiFile,
-  frontEndBlindAuctionFactoryAbiFile,
-  frontEndBlindAuctionFactoryAddressFile,
-  BackEndBlindAuctionAbiFile,
+  fEAdminAbiFile,
+  fEAdminAddressFile,
+  fEBAFAbiFile,
+  fEBAFAddressFile,
 } = require("../helper-hardhat-config");
 
 module.exports = async () => {
@@ -19,21 +17,12 @@ async function updateAbi() {
   const blindAuctionFactory = await ethers.getContract("BlindAuctionFactory");
 
   fs.writeFileSync(
-    frontEndAdminAbiFile,
+    fEAdminAbiFile,
     admin.interface.format(ethers.utils.FormatTypes.json)
   );
   fs.writeFileSync(
-    frontEndBlindAuctionFactoryAbiFile,
+    fEBAFAbiFile,
     blindAuctionFactory.interface.format(ethers.utils.FormatTypes.json)
-  );
-
-  const blindAuctionAbi = JSON.parse(
-    fs.readFileSync(BackEndBlindAuctionAbiFile, "utf8")
-  ).abi;
-
-  fs.writeFileSync(
-    frontEndBlindAuctionAbiFile,
-    JSON.stringify(blindAuctionAbi)
   );
 }
 
@@ -41,9 +30,9 @@ async function updateContractAddresses() {
   const admin = await ethers.getContract("Admin");
   const blindAuctionFactory = await ethers.getContract("BlindAuctionFactory");
 
-  fs.writeFileSync(frontEndAdminAddressFile, JSON.stringify(admin.address));
+  fs.writeFileSync(fEAdminAddressFile, JSON.stringify(admin.address));
   fs.writeFileSync(
-    frontEndBlindAuctionFactoryAddressFile,
+    fEBAFAddressFile,
     JSON.stringify(blindAuctionFactory.address)
   );
 }

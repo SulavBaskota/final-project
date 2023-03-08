@@ -46,15 +46,8 @@ contract BlindAuctionFactory {
         uint highestBid;
         string evaluationMessage;
         address evaluatedBy;
+        bool shippingAddressUpdated;
     }
-
-    // struct AuctionBids {
-    //     mapping(address => Bid) bids;
-    // }
-
-    // struct AuctionPendingReturns {
-    //     mapping(address => uint) pendingReturns;
-    // }
 
     mapping(uint => BlindAuction) private blindAuctions;
     mapping(bytes32 => uint) private auctionIds;
@@ -213,12 +206,12 @@ contract BlindAuctionFactory {
             _endTime < _startTime + MINIMUM_AUCTION_DURATION
         ) revert("Invalid Auction Period");
         if (bytes(_cid).length != 80) revert("Invalid CID");
-        if (bytes(_description).length < 10 || bytes(_description).length > 100)
-            revert("Description must be between 10 to 100 characters");
+        if (bytes(_description).length < 10 || bytes(_description).length > 200)
+            revert("Description must be between 10 to 200 characters");
         if (
             bytes(_shippingAddress).length < 10 ||
-            bytes(_shippingAddress).length > 100
-        ) revert("Shipping must be between 10 to 100 characters");
+            bytes(_shippingAddress).length > 200
+        ) revert("Shipping must be between 10 to 200 characters");
 
         BlindAuction storage blindAuction = blindAuctions[numberOfCampaings];
         blindAuction.title = _title;
@@ -231,6 +224,7 @@ contract BlindAuctionFactory {
         blindAuction.seller = msg.sender;
         blindAuction.auctionState = AuctionState.UNVERIFIED;
         blindAuction.itemState = ItemState.NOTRECEIVED;
+        blindAuction.shippingAddressUpdated = false;
         blindAuction.id = keccak256(
             abi.encodePacked(block.timestamp, numberOfCampaings, msg.sender)
         );
@@ -289,6 +283,8 @@ contract BlindAuctionFactory {
         emit AuctionRejected(_auctionId, msg.sender, _evaluationMessage);
     }
 
+    event BidPlaced(bytes32 _auctionId, address _bidder);
+
     function bid(
         bytes32 _auctionId,
         bytes32 _blindedBid
@@ -309,7 +305,10 @@ contract BlindAuctionFactory {
             deposit: msg.value
         });
         blindAuction.bidders.push(msg.sender);
+        emit BidPlaced(_auctionId, msg.sender);
     }
+
+    event BidRevealed(bytes32 _auctionId, address _bidder);
 
     function reveal(
         bytes32 _auctionId,
@@ -335,22 +334,14 @@ contract BlindAuctionFactory {
         }
         pendingReturns[_auctionId][msg.sender] += refund;
         bidToCheck.blindedBid = bytes32(0);
-
-        // uint length = bidders.length;
-        // for (uint i = 0; i < length; i++) {
-        //     if (bidders[i] == msg.sender) {
-        //         bidders[i] = bidders[bidders.length - 1];
-        //         delete bidders[length - 1];
-        //         bidders.pop();
-        //         break;
-        //     }
-        // }
+        emit BidRevealed(_auctionId, msg.sender);
     }
 
     function withdraw(
         bytes32 _auctionId
     ) external verifiedAuction(_auctionId) onlyAfterRevealTime(_auctionId) {
         uint amount = pendingReturns[_auctionId][msg.sender];
+        if (amount <= 0) revert("No pending returns");
         if (amount > 0) {
             pendingReturns[_auctionId][msg.sender] = 0;
             payable(msg.sender).transfer(amount);
@@ -434,7 +425,8 @@ contract BlindAuctionFactory {
     {
         BlindAuction storage blindAuction = getBlindAuction(_auctionId);
         blindAuction.auctionState = AuctionState.FAILED;
-        payable(blindAuction.evaluatedBy).transfer(STAKE);
+        blindAuction.evaluationMessage = "Cancelled by seller";
+        payable(blindAuction.seller).transfer(STAKE);
         emit AuctionCancelled(_auctionId);
     }
 
@@ -449,6 +441,8 @@ contract BlindAuctionFactory {
         onlyHighestBidder(_auctionId)
         notShipped(_auctionId)
     {
+        BlindAuction storage blindAuction = getBlindAuction(_auctionId);
+        blindAuction.shippingAddressUpdated = true;
         shippingAddresses[_auctionId] = _shippingAddress;
         emit ShippingAddressUpdated(_auctionId);
     }
@@ -459,6 +453,10 @@ contract BlindAuctionFactory {
         bytes32 _auctionId
     ) external onlyAdmin onlyReceived(_auctionId) onlyClosed(_auctionId) {
         BlindAuction storage blindAuction = getBlindAuction(_auctionId);
+        if (
+            blindAuction.auctionState == AuctionState.SUCCESSFUL &&
+            blindAuction.shippingAddressUpdated == false
+        ) revert("Highest bidder has not updated shipping address");
         blindAuction.itemState = ItemState.SHIPPED;
         emit ShipmentStatusUpdated(_auctionId);
     }
@@ -478,6 +476,12 @@ contract BlindAuctionFactory {
         bytes32 _auctionId
     ) external view returns (BlindAuction memory) {
         return getBlindAuction(_auctionId);
+    }
+
+    function getShippingAddress(
+        bytes32 _auctionId
+    ) external view onlyAdmin returns (string memory) {
+        return shippingAddresses[_auctionId];
     }
 
     function getBlindAuction(
