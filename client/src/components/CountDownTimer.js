@@ -29,6 +29,7 @@ export default function CountDownTimer({
 
   useEffect(() => {
     const target = new Date(time * 1000);
+
     const interval = setInterval(() => {
       const now = new Date();
       const difference = target.getTime() - now.getTime();
@@ -52,9 +53,8 @@ export default function CountDownTimer({
       }
     }, 1000);
 
-    if (timePassed) return clearInterval(interval);
     return () => clearInterval(interval);
-  }, []);
+  }, [time]);
 
   return (
     <>

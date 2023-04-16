@@ -23,7 +23,7 @@ export default function ShipItems() {
   }, []);
 
   useEffect(() => {
-    if (role && (role === "admin" || role === "super")) {
+    if (signer && role && (role === "admin" || role === "super")) {
       fetchUnshippedItems();
       const signedBAFContract = BAFContract.connect(signer);
       signedBAFContract.on("AuctionRejected", () => {

@@ -24,7 +24,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (address) {
+    if (signer && address) {
       fetchOpenAuctions();
       const signedBAFContract = BAFContract.connect(signer);
       signedBAFContract.on("AuctionVerified", () => {

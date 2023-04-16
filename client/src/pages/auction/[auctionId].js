@@ -9,7 +9,6 @@ import {
   Paper,
   Divider,
   LoadingOverlay,
-  Text,
 } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import { useTimeout } from "@mantine/hooks";
@@ -17,6 +16,7 @@ import AuctionBadge from "@component/components/AuctionBadge";
 import AuctionDetails from "@component/components/AuctionDetails";
 import Timers from "@component/components/Timers";
 import AuctionInterface from "@component/components/AuctionInterface";
+import WalletNotConnected from "@component/components/WalletNotConnected";
 
 export default function Auction() {
   const router = useRouter();
@@ -49,7 +49,7 @@ export default function Auction() {
   }, []);
 
   useEffect(() => {
-    if (address && auctionId) {
+    if (signer && address && auctionId) {
       fetchBlindAuction();
       const signedBAFContract = BAFContract.connect(signer);
       signedBAFContract.on("AuctionCancelled", (_auctionId) => {
@@ -102,57 +102,67 @@ export default function Auction() {
   return (
     <>
       {visible && <LoadingOverlay visible={visible} overlayBlur={2} />}
-      {auction && images.length > 0 && (
-        <Container>
-          <Grid>
-            <Grid.Col xs={12} md={8}>
-              <Carousel loop withIndicators>
-                {images.map((image, index) => (
-                  <Carousel.Slide key={index}>
-                    <Image src={image} alt={`${auction.id}-image-${index}`} />
-                  </Carousel.Slide>
-                ))}
-              </Carousel>
-            </Grid.Col>
-            <Grid.Col xs={12} md={4}>
-              <Stack>
-                <Paper shadow="sm" p="md" radius="md" withBorder>
-                  <Stack>
-                    <AuctionBadge auctionState={auction.auctionState} />
-                    <Divider size="md" />
-                    <Timers
-                      auctionState={auction.auctionState}
-                      startTime={auction.startTime}
-                      endTime={auction.endTime}
-                      revealTime={auction.revealTime}
-                      startTimePassed={startTimePassed}
-                      setStartTimePassed={setStartTimePassed}
-                      endTimePassed={endTimePassed}
-                      setEndTimePassed={setEndTimePassed}
-                      revealTimePassed={revealTimePassed}
-                      setRevealTimePassed={setRevealTimePassed}
-                    />
-                  </Stack>
-                </Paper>
-              </Stack>
-            </Grid.Col>
-            <Grid.Col xs={12}>
-              <Grid>
-                <Grid.Col xs={12} md={8}>
+      {address ? (
+        auction && (
+          <Container>
+            <Grid>
+              <Grid.Col xs={12} md={8}>
+                {images.length > 0 && (
+                  <Carousel loop withIndicators>
+                    {images.map((image, index) => (
+                      <Carousel.Slide key={index}>
+                        <Image
+                          src={image}
+                          alt={`${auction.id}-image-${index}`}
+                          height={500}
+                        />
+                      </Carousel.Slide>
+                    ))}
+                  </Carousel>
+                )}
+              </Grid.Col>
+              <Grid.Col xs={12} md={4}>
+                <Stack>
                   <Paper shadow="sm" p="md" radius="md" withBorder>
-                    <AuctionDetails auction={auction} />
+                    <Stack>
+                      <AuctionBadge auctionState={auction.auctionState} />
+                      <Divider size="md" />
+                      <Timers
+                        auctionState={auction.auctionState}
+                        startTime={auction.startTime}
+                        endTime={auction.endTime}
+                        revealTime={auction.revealTime}
+                        startTimePassed={startTimePassed}
+                        setStartTimePassed={setStartTimePassed}
+                        endTimePassed={endTimePassed}
+                        setEndTimePassed={setEndTimePassed}
+                        revealTimePassed={revealTimePassed}
+                        setRevealTimePassed={setRevealTimePassed}
+                      />
+                    </Stack>
                   </Paper>
-                </Grid.Col>
-                <AuctionInterface
-                  auction={auction}
-                  startTimePassed={startTimePassed}
-                  endTimePassed={endTimePassed}
-                  revealTimePassed={revealTimePassed}
-                />
-              </Grid>
-            </Grid.Col>
-          </Grid>
-        </Container>
+                </Stack>
+              </Grid.Col>
+              <Grid.Col xs={12}>
+                <Grid>
+                  <Grid.Col xs={12} md={8}>
+                    <Paper shadow="sm" p="md" radius="md" withBorder>
+                      <AuctionDetails auction={auction} />
+                    </Paper>
+                  </Grid.Col>
+                  <AuctionInterface
+                    auction={auction}
+                    startTimePassed={startTimePassed}
+                    endTimePassed={endTimePassed}
+                    revealTimePassed={revealTimePassed}
+                  />
+                </Grid>
+              </Grid.Col>
+            </Grid>
+          </Container>
+        )
+      ) : (
+        <WalletNotConnected />
       )}
     </>
   );

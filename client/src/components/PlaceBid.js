@@ -19,6 +19,10 @@ export default function PlaceBid({ auctionId }) {
   };
 
   const handleClick = async () => {
+    if (secret === "") {
+      showErrorNotification("Secret cannot be empty");
+      return;
+    }
     try {
       toggleIsLoading();
       const txResponse = await placeBid(auctionId, deposit, trueBid, secret);

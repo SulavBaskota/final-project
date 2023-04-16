@@ -18,37 +18,33 @@ export default function AuctionMediaCard({ auction, cardButton }) {
   }, []);
 
   return (
-    <>
-      {images.length > 0 ? (
-        <Card
-          shadow="sm"
-          padding="lg"
-          radius="md"
-          withBorder
-          sx={{ minWidth: 250 }}
-        >
-          <Card.Section>
-            <Image src={images[0]} height={200} alt="Item Image" />
-          </Card.Section>
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
+      sx={{ minWidth: 250 }}
+    >
+      <Card.Section>
+        <Image src={images[0]} height={200} alt="Item Image" />
+      </Card.Section>
 
-          <Group position="apart" mt="md" mb="xs">
-            <Text weight={500}>{auction.title}</Text>
-            <AuctionBadge auctionState={auction.auctionState} size="sm" />
-          </Group>
+      <Group position="apart" mt="md" mb="xs">
+        <Text weight={500}>{auction.title}</Text>
+        <AuctionBadge auctionState={auction.auctionState} size="sm" />
+      </Group>
 
-          <AuctionTimingDetails
-            startTime={auction.startTime}
-            endTime={auction.endTime}
-          />
+      <AuctionTimingDetails
+        startTime={auction.startTime}
+        endTime={auction.endTime}
+      />
 
-          <Box sx={{ height: 100 }}>
-            <Text size="sm" color="dimmed" mt="md" lineClamp={4}>
-              {auction.description}
-            </Text>
-          </Box>
-          {cardButton}
-        </Card>
-      ) : null}
-    </>
+      <Box sx={{ height: 100 }}>
+        <Text size="sm" color="dimmed" mt="md" lineClamp={4}>
+          {auction.description}
+        </Text>
+      </Box>
+      {cardButton}
+    </Card>
   );
 }

@@ -24,7 +24,7 @@ export default function ClosedAuctions() {
   }, []);
 
   useEffect(() => {
-    if (address) {
+    if (signer && address) {
       fetchClosedAuctions();
       const signedBAFContract = BAFContract.connect(signer);
       signedBAFContract.on("AuctionCancelled", () => {

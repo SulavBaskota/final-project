@@ -24,7 +24,7 @@ export default function Bookmarks() {
   }, []);
 
   useEffect(() => {
-    if (address) {
+    if (signer && address) {
       fetchUserAuctions();
       const signedBAFContract = BAFContract.connect(signer);
       signedBAFContract.on("AuctionCancelled", (_auctionId) => {
@@ -60,7 +60,7 @@ export default function Bookmarks() {
         "AuctionSuccessful",
         "AuctionFailed",
       ]);
-  }, [address, signer]);
+  }, [address, signer, userAuctions]);
 
   return (
     <>

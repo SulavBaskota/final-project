@@ -23,7 +23,7 @@ export default function EvaluateAuctions() {
   };
 
   useEffect(() => {
-    if (role && (role === "admin" || role === "super")) {
+    if (signer && role && (role === "admin" || role === "super")) {
       fetchUnverifiedAuctions();
       const signedBAFContract = BAFContract.connect(signer);
       signedBAFContract.on("AuctionCreated", () => {

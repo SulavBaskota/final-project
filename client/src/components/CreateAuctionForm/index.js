@@ -12,13 +12,7 @@ import CreateAuctionTextAreas from "./CreateAuctionTextAreas";
 import CreateAuctionImageUpload from "./CreateAuctionImageUpload";
 import DateTimePicker from "./DateTimePicker";
 
-// Need to remove later on
-const cid = [
-  "https://gateway.ipfscdn.io/ipfs/QmSdn7fERhNW76YTZcCHjpcj7KgBSmvEqULkVSeLmxTNkT/0",
-  "https://gateway.ipfscdn.io/ipfs/Qma6zxbbYD1nFpJuZEQA9Xbi7bUyw5ktZb8weCvAxrYTFE/0",
-  "https://gateway.ipfscdn.io/ipfs/QmbtETQy24fNBQnpASTptHibmh1go6KBBtpyztnf1C5krG/0",
-  "https://gateway.ipfscdn.io/ipfs/QmcStaafWvd5zZs1qtjsa2xvJ8Eq43QNiFEe5JRM32VDtM/0",
-];
+
 
 export default function CreateAuctionForm({ opened, setOpened }) {
   const router = useRouter();
@@ -53,18 +47,26 @@ export default function CreateAuctionForm({ opened, setOpened }) {
   };
 
   const handleSubmit = async () => {
+    if (images.length == 0) {
+      showErrorNotification("Choose upto 4 images");
+      return;
+    }
+    if (images.length > 4) {
+      showErrorNotification("Choose upto 4 images only");
+      return;
+    }
     try {
       toggleIsLoading();
       const auctionStartTime = calculateDateInUnix(startDate, startTime);
       const auctionEndTime = calculateDateInUnix(endDate, endTime);
-      // const cid = await uploadToIpfs(images);
+      const cid = await uploadToIpfs(images);
+      console.log(cid);
       const params = {
         _title: title,
         _startTime: auctionStartTime,
         _endTime: auctionEndTime,
         _minimumBid: minimumBid,
-        // _cid: cid,
-        _cid: cid[0],
+        _cid: cid.toString(),
         _description: descrption,
         _shippingAddress: returnAddress,
       };

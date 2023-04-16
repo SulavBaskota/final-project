@@ -86,7 +86,7 @@ export default function EvaluateAuctionModel({ opened, setOpened, auction }) {
 
   return (
     <>
-      {auction && images.length > 0 ? (
+      {auction ? (
         <Modal
           size="70%"
           opened={opened}
@@ -95,13 +95,19 @@ export default function EvaluateAuctionModel({ opened, setOpened, auction }) {
         >
           <Grid>
             <Grid.Col sm={12} md={6}>
-              <Carousel loop withIndicators>
-                {images.map((image, index) => (
-                  <Carousel.Slide key={index}>
-                    <Image src={image} alt={`${auction.id}-image-${index}`} />
-                  </Carousel.Slide>
-                ))}
-              </Carousel>
+              {images.length > 0 && (
+                <Carousel loop withIndicators>
+                  {images.map((image, index) => (
+                    <Carousel.Slide key={index}>
+                      <Image
+                        src={image}
+                        alt={`${auction.id}-image-${index}`}
+                        height={500}
+                      />
+                    </Carousel.Slide>
+                  ))}
+                </Carousel>
+              )}
               <Stack mt="md">
                 <Text>ID: {auction.id}</Text>
                 <Text>Seller: {auction.seller}</Text>
