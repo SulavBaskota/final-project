@@ -5,10 +5,11 @@ import "./Admin.sol";
 
 contract BlindAuctionFactory {
     address public immutable adminContractAddress;
-    uint public constant REVEAL_PERIOD = 240; // 4 minutes
+    address private immutable superAdminAddress;
+    uint public constant REVEAL_PERIOD = 120; // 2 minutes
     uint public constant MINIMUM_VERIFICATION_DURATION = 120; // 2 minutes
-    uint public constant MINIMUM_AUCTION_DURATION = 240; // 4 minutes
-    uint public constant STAKE = 100000000000000000; // 0.1 ETH
+    uint public constant MINIMUM_AUCTION_DURATION = 120; // 2 minutes
+    uint public constant STAKE = 1000000000000000000; // 1 ETH
 
     struct Bid {
         bytes32 blindedBid;
@@ -58,6 +59,7 @@ contract BlindAuctionFactory {
 
     constructor(address _adminContractAddress) {
         adminContractAddress = _adminContractAddress;
+        superAdminAddress = msg.sender;
     }
 
     modifier onlyAdmin() {
@@ -279,7 +281,7 @@ contract BlindAuctionFactory {
         blindAuction.evaluatedBy = msg.sender;
         blindAuction.evaluationMessage = _evaluationMessage;
         if (itemReceived) blindAuction.itemState = ItemState.RECEIVED;
-        payable(blindAuction.evaluatedBy).transfer(STAKE);
+        payable(superAdminAddress).transfer(STAKE);
         emit AuctionRejected(_auctionId, msg.sender, _evaluationMessage);
     }
 
@@ -394,7 +396,7 @@ contract BlindAuctionFactory {
                 blindAuction.highestBid
             );
             payable(blindAuction.seller).transfer(blindAuction.highestBid);
-            payable(blindAuction.evaluatedBy).transfer(STAKE);
+            payable(superAdminAddress).transfer(STAKE);
         } else {
             blindAuction.auctionState = AuctionState.FAILED;
             payable(blindAuction.seller).transfer(STAKE);
