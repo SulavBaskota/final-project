@@ -60,7 +60,7 @@ export default function CreateAuctionForm({ opened, setOpened }) {
       const auctionStartTime = calculateDateInUnix(startDate, startTime);
       const auctionEndTime = calculateDateInUnix(endDate, endTime);
       const cid = await uploadToIpfs(images);
-      console.log(cid);
+
       const params = {
         _title: title,
         _startTime: auctionStartTime,

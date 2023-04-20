@@ -108,7 +108,6 @@ export const StateContextProvider = ({ children }) => {
   };
 
   const downloadFromIpfs = async (cid) => {
-    console.log(cid);
     const images = await storage.downloadJSON(cid);
     return images;
   };

@@ -15,7 +15,7 @@ export default function CountDownTimer({
   const [seconds, setSeconds] = useState(0);
 
   const GridColumns = ({ value, unit }) => (
-    <Grid.Col xs={3}>
+    <Grid.Col span={3}>
       <Stack>
         <Text align="center" color="pink" fz={30}>
           {value}
